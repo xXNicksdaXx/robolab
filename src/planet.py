@@ -30,6 +30,8 @@ class Planet:
     it according to the specifications
     """
 
+    paths = {}
+
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
@@ -46,9 +48,20 @@ class Planet:
         :param weight: Integer
         :return: void
         """
-
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+
+       # if the Node is already discovered 
+        if start[0] in self.paths:
+            # if the Path exist in the Dictionary
+            if start[1] in self.paths[start[0]]:
+                return 0
+            self.paths[start[0]][start[1]] = (target[0], target[1], weight)
+            self.add_path(target, start, weight)
+            # self.paths[target[0]][target[1]] = (start[0], start[1], weight)
+        else:
+            self.paths[start[0]] = {start[1]: (target[0], target[1], weight)}
+            self.add_path(target, start, weight)
+            # self.paths[target[0]] = {target[1]: (start[0], start[1], weight)}
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         """
@@ -71,7 +84,9 @@ class Planet:
         """
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+
+        return self.paths
+
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
         """
@@ -90,14 +105,15 @@ class Planet:
         shortest_path = []
         currentNode = start  #direction need to be added
 
-        while target != currentNode:
+        while currentNode != target:
             shortest_path.add(currentNode)  #direction need to be added
             possiblePaths = self.get_paths()[currentNode]
             nextnode = min(possiblePaths.values(), key=lambda t: t[2])[0]
 
             #in order to avoid any loop
             #if the next node = the current node -> search for another target node
-            if nextnode == currentNode:
+
+            if nextnode in shortest_path:
                 possiblePaths.pop(nextnode)
                 nextnode = min(possiblePaths.values(), key=lambda t: t[2])[0]
 
@@ -105,3 +121,4 @@ class Planet:
             currentNode = nextnode   #direction need to be added
 
         return shortest_path
+        pass
