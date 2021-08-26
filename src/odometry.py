@@ -4,13 +4,14 @@ import time
 
 
 class Odometry:
+    # components
     leftMotor = ev3.LargeMotor("outA")
     rightMotor = ev3.LargeMotor("outC")
     colorSensor = ev3.ColorSensor("in1")
-    colorSensor.mode = 'COL-REFLECT'
     button = ev3.TouchSensor("in2")
     ultrasonicSensor = ev3.UltrasonicSensor("in3")
 
+    # pid variables
     kp = 0.8
     ki = 0
     kd = 0
@@ -20,6 +21,7 @@ class Odometry:
     lastError = 0
     derivative = 0
 
+    # config colors
     black = 0
     white = 0
 
@@ -28,8 +30,27 @@ class Odometry:
         Initializes odometry module
         """
 
-        # YOUR CODE FOLLOWS (remove pass, please!)
+    def scan_detailed(self):
+        self.colorSensor.mode = 'COL-COLOR'
+        simple = self.colorSensor.value()
+        print(f"simple: {simple}")
+        self.colorSensor.mode = 'COL-REFLECT'
+        reflect = self.colorSensor.value()
+        print(f"reflect: {reflect}")
+        self.colorSensor.mode = 'RGB-RAW'
+        rgb = self.colorSensor.value()
+        print(f"rgb: {rgb}")
+        rgb_tuple = self.colorSensor.bin_data("hhh")
+        print(f"rgb-tuple: {rgb_tuple}")
+        c_tuple = (simple, reflect, rgb, rgb_tuple)
+        print(f"tuple: {c_tuple}")
+        return c_tuple
 
+    def scan_fast(self):
+        self.colorSensor.mode = 'COL-REFLECT'
+        return self.colorSensor.value()
+
+    # sets black & white color before start
     def config(self):
         print("----- CONFIG -----")
         print("1. set black")
@@ -37,20 +58,22 @@ class Odometry:
         set_black = False
         set_white = False
 
-        while set_black == False:
+        while not set_black:
             if self.button.value() == 1:
-                self.black = self.colorSensor.value()
+                scan = self.scan_detailed()
+                self.black = scan[1]
                 print("Set BLACK: " + str(self.black))
-                #self.black = self.black[0] + self.black[1] + self.black[2]
-                #print("Converted BLACK: " + str(self.black))
+                # self.black = self.black[0] + self.black[1] + self.black[2]
+                # print("Converted BLACK: " + str(self.black))
                 set_black = True
         time.sleep(3)
-        while set_white == False:
+        while not set_white:
             if self.button.value() == 1:
-                self.white = self.colorSensor.value()
+                scan = self.scan_detailed()
+                self.white = scan[1]
                 print("Set WHITE: " + str(self.white))
-                #self.white = self.white[0] + self.white[1] + self.white[2]
-                #print("Converted WHITE: " + str(self.white))
+                # self.white = self.white[0] + self.white[1] + self.white[2]
+                # print("Converted WHITE: " + str(self.white))
                 set_white = True
         time.sleep(3)
         self.offset = (self.white + self.black) * 0.5
@@ -59,18 +82,19 @@ class Odometry:
         time.sleep(3)
         print("------------------")
 
+    # left motor
     def moveA(self, pl):
         self.leftMotor.stop_action = "brake"
         self.leftMotor.speed_sp = pl
         self.leftMotor.command = "run-forever"
 
-
+    # right motor
     def moveC(self, pr):
         self.rightMotor.stop_action = "brake"
         self.rightMotor.speed_sp = pr
         self.rightMotor.command = "run-forever"
 
-
+    # central movement function - works with pid
     def pid(self):
         print("!!!!! End drive by pressing button !!!!!")
         while self.button.value() == 0:
