@@ -24,6 +24,7 @@ class ExampleTestPlanet(unittest.TestCase):
         """
         # Initialize your data structure here
         self.planet = Planet()
+
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
         self.planet.add_path(((0, 1), Direction.WEST), ((0, 0), Direction.WEST), 1)
 
@@ -48,7 +49,7 @@ class TestRoboLabPlanet(unittest.TestCase):
         """
         # Initialize your data structure here
         self.planet = Planet()
-
+        self.EmptyPlanet = Planet()
         self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
         self.planet.add_path(((0, 1), Direction.WEST), ((-1, 0), Direction.NORTH), 2)
         self.planet.add_path(((0, 1), Direction.EAST), ((1, 0), Direction.NORTH), 2)
@@ -91,7 +92,9 @@ class TestRoboLabPlanet(unittest.TestCase):
         """
         This test should check that an empty planet really is empty
         """
-        self.fail('implement me!')
+
+        # self.fail('implement me!')
+        self.assertTrue(not self.EmptyPlanet.get_paths())
 
     def test_target(self):
         """

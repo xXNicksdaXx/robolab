@@ -30,12 +30,12 @@ class Planet:
     it according to the specifications
     """
 
-    paths = {}
+
 
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
-
+        self.paths = {}
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):
         """
@@ -50,7 +50,7 @@ class Planet:
         """
         # YOUR CODE FOLLOWS (remove pass, please!)
 
-       # if the Node is already discovered 
+       # if the Node is already discovered
         if start[0] in self.paths:
             # if the Path exist in the Dictionary
             if start[1] in self.paths[start[0]]:
