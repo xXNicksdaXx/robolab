@@ -7,23 +7,21 @@ class Odometry:
     leftMotor = ev3.LargeMotor("outA")
     rightMotor = ev3.LargeMotor("outC")
     colorSensor = ev3.ColorSensor("in1")
-    colorSensor.mode = 'RGB-RAW'
+    colorSensor.mode = 'COL-REFLECT'
     button = ev3.TouchSensor("in2")
     ultrasonicSensor = ev3.UltrasonicSensor("in3")
 
-    con_p = 10
-    con_i = 0
-    con_d = 0
-    offset = 45
-    targetPower = 40
+    kp = 0.8
+    ki = 0
+    kd = 0
+    offset = 0
+    targetPower = 250
     integral = 0
     lastError = 0
     derivative = 0
 
-    lightValue = 0
     black = 0
     white = 0
-
 
     def __init__(self):
         """
@@ -40,36 +38,51 @@ class Odometry:
         set_white = False
 
         while set_black == False:
-            if Odometry.button.value() == 1:
-                Odometry.black = Odometry.colorSensor.bin_data("hhh")
-                print("Set BLACK: " + str(Odometry.black))
-                Odometry.black = Odometry.black[0] + Odometry.black[1] + Odometry.black[2]
-                print("Converted BLACK: " + str(Odometry.black))
+            if self.button.value() == 1:
+                self.black = self.colorSensor.value()
+                print("Set BLACK: " + str(self.black))
+                #self.black = self.black[0] + self.black[1] + self.black[2]
+                #print("Converted BLACK: " + str(self.black))
                 set_black = True
-
-        time.sleep(5)
-
+        time.sleep(3)
         while set_white == False:
-            if Odometry.button.value() == 1:
-                Odometry.white = Odometry.colorSensor.bin_data("hhh")
-                print("Set WHITE: " + str(Odometry.white))
-                Odometry.white = Odometry.white[0] + Odometry.white[1] + Odometry.white[2]
-                print("Converted WHITE: " + str(Odometry.white))
+            if self.button.value() == 1:
+                self.white = self.colorSensor.value()
+                print("Set WHITE: " + str(self.white))
+                #self.white = self.white[0] + self.white[1] + self.white[2]
+                #print("Converted WHITE: " + str(self.white))
                 set_white = True
-
-        Odometry.offset = Odometry.white - Odometry.black
-        print("Set OFFSET: " + str(Odometry.offset))
+        time.sleep(3)
+        self.offset = (self.white + self.black) * 0.5
+        print("Set OFFSET: " + str(self.offset))
         print("Config done.")
+        time.sleep(3)
+        print("------------------")
+
+    def moveA(self, pl):
+        self.leftMotor.stop_action = "brake"
+        self.leftMotor.speed_sp = pl
+        self.leftMotor.command = "run-forever"
 
 
-    def move(self):
-        print("End drive by pressing button.")
-        while Odometry.button.value() == 0:
-            x = 0
+    def moveC(self, pr):
+        self.rightMotor.stop_action = "brake"
+        self.rightMotor.speed_sp = pr
+        self.rightMotor.command = "run-forever"
+
+
+    def pid(self):
+        print("!!!!! End drive by pressing button !!!!!")
+        while self.button.value() == 0:
+            colorValue = self.colorSensor.value()
+            error = colorValue - self.offset
+            self.integral = 0.67 * self.integral + error
+            self.derivative = error - self.lastError
+            turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
+            powerLeft = self.targetPower + turn
+            powerRight = self.targetPower - turn
+            self.moveA(powerLeft)
+            self.moveC(powerRight)
+            self.lastError = error
+
         print("Drive stopped.")
-
-
-
-
-
-
