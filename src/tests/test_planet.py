@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-from planet import Direction, Planet
+from src.planet import Direction, Planet
 
 
 class ExampleTestPlanet(unittest.TestCase):
@@ -48,13 +48,44 @@ class TestRoboLabPlanet(unittest.TestCase):
         """
         # Initialize your data structure here
         self.planet = Planet()
-        # self.planet.add_path(...)
+
+        self.planet.add_path(((0, 0), Direction.NORTH), ((0, 1), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 1), Direction.WEST), ((-1, 0), Direction.NORTH), 2)
+        self.planet.add_path(((0, 1), Direction.EAST), ((1, 0), Direction.NORTH), 2)
+        self.planet.add_path(((0, 1), Direction.NORTH), ((0, 2), Direction.SOUTH), 1)
+        self.planet.add_path(((0, 2), Direction.WEST), ((0, 3), Direction.SOUTH), 5)
+
+        self.target_dict = {
+            (0, 0): {
+                Direction.NORTH: ((0, 1), Direction.SOUTH, 1)
+            },
+            (0, 1): {
+                Direction.NORTH: ((0, 2), Direction.SOUTH, 1),
+                Direction.EAST: ((1, 0), Direction.NORTH, 2),
+                Direction.SOUTH: ((0, 0), Direction.NORTH, 1),
+                Direction.WEST: ((-1, 0), Direction.NORTH, 2)
+            },
+            (-1, 0): {
+                Direction.NORTH: ((0, 1), Direction.WEST, 2)
+            },
+            (1, 0): {
+                Direction.NORTH: ((0, 1), Direction.EAST, 2)
+            },
+            (0, 2): {
+                Direction.SOUTH: ((0, 1), Direction.NORTH, 1),
+                Direction.WEST: ((0, 3), Direction.SOUTH, 5)
+            },
+            (0, 3): {
+                Direction.SOUTH: ((0, 2), Direction.WEST, 5)
+            }
+        }
 
     def test_integrity(self):
         """
         This test should check that the dictionary returned by "planet.get_paths()" matches the expected structure
         """
-        self.fail('implement me!')
+        # self.fail('implement me!')
+        self.assertEqual(self.target_dict, self.planet.get_paths())
 
     def test_empty_planet(self):
         """
