@@ -86,4 +86,22 @@ class Planet:
         """
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+
+        shortest_path = []
+        currentNode = start  #direction need to be added
+
+        while target != currentNode:
+            shortest_path.add(currentNode)  #direction need to be added
+            possiblePaths = self.get_paths()[currentNode]
+            nextnode = min(possiblePaths.values(), key=lambda t: t[2])[0]
+
+            #in order to avoid any loop
+            #if the next node = the current node -> search for another target node
+            if nextnode == currentNode:
+                possiblePaths.pop(nextnode)
+                nextnode = min(possiblePaths.values(), key=lambda t: t[2])[0]
+
+
+            currentNode = nextnode   #direction need to be added
+
+        return shortest_path
