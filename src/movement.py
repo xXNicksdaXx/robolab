@@ -12,9 +12,9 @@ class Movement:
     # ultrasonicSensor = ev3.UltrasonicSensor("in3")
 
     # pid variables
-    kp = 0.85
-    ki = 0
-    kd = 0
+    kp = 0.45
+    ki = 0.0135
+    kd = 0.35
     offset = 170
     targetPower = 150
     integral = 0
@@ -109,13 +109,20 @@ class Movement:
         self.rightMotor.speed_sp = pr
         self.rightMotor.command = "run-forever"
 
-    def find_distance_per_tick(self):
+    def find_parameters_per_tick(self):
         i = 0
         while i < 1000:
-            self.leftMotor.speed_sp = 40
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = 40
-            self.rightMotor.command = "run-forever"
+            # colorValue = self.scan()
+            error = 1 - self.offset
+            self.integral = 0.67 * self.integral + error
+            self.derivative = error - self.lastError
+            turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
+            powerLeft = self.targetPower - turn
+            powerRight = self.targetPower + turn
+            self.moveA(80)
+            self.moveC(80)
+            self.lastError = error
+            i += 1
         print("test done")
 
     # stops robot movement
@@ -139,20 +146,20 @@ class Movement:
         print("!!!!! End drive by pressing button !!!!!")
         while self.button.value() == 0:
             colorValue = self.scan()
-            if colorValue == "red" or colorValue == "blue":
-                time.sleep(1)
-                self.stop()
-                break
-            else:
-                error = colorValue - self.offset
-                self.integral = 0.67 * self.integral + error
-                self.derivative = error - self.lastError
-                turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
-                print(f"__turn: {turn}")
-                powerLeft = self.targetPower - turn
-                powerRight = self.targetPower + turn
-                self.moveA(powerLeft)
-                self.moveC(powerRight)
-                self.lastError = error
+            # if colorValue == "red" or colorValue == "blue":
+                # time.sleep(1)
+                # self.stop()
+                # break
+            # else:
+            error = colorValue - self.offset
+            self.integral = 0.67 * self.integral + error
+            self.derivative = error - self.lastError
+            turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
+            print(f"__turn: {turn}")
+            powerLeft = self.targetPower - turn
+            powerRight = self.targetPower + turn
+            self.moveA(powerLeft)
+            self.moveC(powerRight)
+            self.lastError = error
 
         print("Drive stopped.")
