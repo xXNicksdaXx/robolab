@@ -32,6 +32,31 @@ class Movement:
         self.rightMotor.stop_action = "brake"
         self.config()
 
+    # sets black & white color before start
+    def config(self):
+        print("--------------- CONFIG ---------------")
+        print("1. black")
+        print("2. white")
+        set_black = False
+        set_white = False
+
+        while not set_black:
+            if self.button.value() == 1:
+                self.black = self.scan()
+                print(f"** set BLACK: {self.black}")
+                set_black = True
+        time.sleep(1)
+        while not set_white:
+            if self.button.value() == 1:
+                self.white = self.scan()
+                print(f"** set WHITE: {self.white}")
+                set_white = True
+        self.offset = (self.white + self.black) * 0.5
+        print(f"** set OFFSET: {self.offset}")
+        print("Config done.")
+        print("--------------------------------------")
+        time.sleep(3)
+
     # scans everything, for test
     def scan_detailed(self):
         active = False
@@ -71,34 +96,22 @@ class Movement:
         else:
             return rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2]
 
-    # sets black & white color before start
-    def config(self):
-        print("--------------- CONFIG ---------------")
-        print("1. black")
-        print("2. white")
-        set_black = False
-        set_white = False
+    # scans absolute parameter
+    def scan_absolute(self):
+        self.colorSensor.mode = 'RGB-RAW'
+        rgb_tuple = self.colorSensor.bin_data("hhh")
+        rgb_tuple = (int(0.8 * rgb_tuple[0]), int(0.25 * rgb_tuple[1]), int(0.8 * rgb_tuple[2]))
 
-        while not set_black:
-            if self.button.value() == 1:
-                self.black = self.scan()
-                print(f"** set BLACK: {self.black}")
-                # self.black = self.black[0] + self.black[1] + self.black[2]
-                # print("Converted BLACK: " + str(self.black))
-                set_black = True
-        time.sleep(3)
-        while not set_white:
-            if self.button.value() == 1:
-                self.white = self.scan()
-                print(f"** set WHITE: {self.white}")
-                # self.white = self.white[0] + self.white[1] + self.white[2]
-                # print("Converted WHITE: " + str(self.white))
-                set_white = True
-        self.offset = (self.white + self.black) * 0.5
-        print(f"** set OFFSET: {self.offset}")
-        print("Config done.")
-        print("--------------------------------------")
-        time.sleep(3)
+        if rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
+            return "red"
+        elif rgb_tuple[2] > rgb_tuple[0] + rgb_tuple[1]:
+            return "blue"
+        elif rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] < 70:
+            return "black"
+        elif rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] > 250:
+            return "white"
+        else:
+            return "other"
 
     # left motor movement
     def moveA(self, pl):
@@ -135,10 +148,10 @@ class Movement:
     # 30 degree turn
     def turn_45(self):
         i = 0
-        while i < 60:
-            self.leftMotor.speed_sp = 120
+        self.leftMotor.speed_sp = -90
+        self.rightMotor.speed_sp = 90
+        while i < 200:
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
             i += 1
         self.stop()
@@ -146,10 +159,10 @@ class Movement:
     # 90 degree turnaround
     def turn_90(self):
         i = 0
-        while i < 135:
-            self.leftMotor.speed_sp = 120
+        self.leftMotor.speed_sp = 90
+        self.rightMotor.speed_sp = -90
+        while i < 420:
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
             i += 1
         self.stop()
@@ -157,10 +170,10 @@ class Movement:
     # 360 degree turnaround
     def turn_360(self):
         i = 0
-        while i < 510:
-            self.leftMotor.speed_sp = 120
+        self.leftMotor.speed_sp = 90
+        self.rightMotor.speed_sp = -90
+        while i < 1530:
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
             i += 1
         self.stop()
@@ -177,23 +190,36 @@ class Movement:
             self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
 
-
     # scans node for paths
     def node(self, color):
         print("! FOUND NODE !")
         while self.scan() == color:
             self.moveA(80)
             self.moveC(80)
+        self.moveA()
         self.turn_45()
-        time.sleep(5)
-        self.turn_360()
-
+        time.sleep(2)
+        c = "white"
+        k = 0
+        i = 0
+        while i < 510:
+            self.leftMotor.speed_sp = 120
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.speed_sp = -120
+            self.rightMotor.command = "run-forever"
+            new_scan = self.scan_absolute()
+            if c != new_scan:
+                c = new_scan
+                k += 1
+            i += 1
+        self.stop()
+        print(k)
 
     # central movement function - works with pid
     def follow_line(self):
         time.sleep(5)
         print("!!!!! End drive by pressing button !!!!!")
-        while self.button.value() == 0:         # condition for scan done
+        while self.button.value() == 0:  # condition for scan done
             colorValue = self.scan()
             if colorValue == -1 or colorValue == -2:
                 self.stop()

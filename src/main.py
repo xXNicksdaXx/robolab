@@ -2,10 +2,13 @@
 
 import logging
 import os
+import time
+
 import paho.mqtt.client as mqtt
 import uuid
 import signal
 from odometry import Odometry
+from movement import Movement
 
 client = None  # DO NOT EDIT
 
@@ -32,9 +35,15 @@ def run():
     # THE EXECUTION OF ALL CODE SHALL BE STARTED FROM WITHIN THIS FUNCTION.
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
+    print("-------------------- ROBOT --------------------")
     od = Odometry()
-    od.config()
-    print("Hello World!")
+    mo = Movement()
+    mo.turn_90()
+    time.sleep(2)
+    mo.turn_360()
+    time.sleep(2)
+    mo.turn_45()
+    print("-----------------------------------------------")
 
 
 # DO NOT EDIT
