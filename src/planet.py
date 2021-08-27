@@ -102,23 +102,47 @@ class Planet:
 
         # YOUR CODE FOLLOWS (remove pass, please!)
 
+        #if the target Node is not in the Paths Dictionary
+        if target not in self.paths:
+            print("Target not reachable")
+            return None
+
         shortest_path = []
-        currentNode = start  #direction need to be added
+        visitedNodes = []
+        currentNode = start
 
         while currentNode != target:
-            shortest_path.add(currentNode)  #direction need to be added
-            possiblePaths = self.get_paths()[currentNode]
-            nextnode = min(possiblePaths.values(), key=lambda t: t[2])[0]
 
-            #in order to avoid any loop
-            #if the next node = the current node -> search for another target node
+            visitedNodes.append(currentNode)
+            # print("crNode:" + str(currentNode))
+            # print("visitedNodes : "+ str(visitedNodes))
 
-            if nextnode in shortest_path:
-                possiblePaths.pop(nextnode)
-                nextnode = min(possiblePaths.values(), key=lambda t: t[2])[0]
+            possiblePaths = self.get_paths()[currentNode]           #Dictionary of all Possible Paths
+            # print("possiblePaths: "+ str(possiblePaths))
 
+            maxWeight = max(possiblePaths.values(), key=lambda t: t[2])[2]  #to chose the minimal Weight begin with the maximal weight
+            #print("MaxWeight : "+ str(maxWeight))
 
-            currentNode = nextnode   #direction need to be added
+            #initialization but will be changed later
+            nextDir = Direction.NORTH
+            nextNode = (0, 0)
+
+            #compare all Weights to find the minimum
+            for path in possiblePaths:
+                #print("for loop")
+                #print(possiblePaths[path][2])
+
+                # to avoid any loops check if the next node has ben visited
+                if possiblePaths[path][2] <= maxWeight and (possiblePaths[path][0] not in visitedNodes):
+
+                    maxWeight = possiblePaths[path][2]
+                    nextNode = possiblePaths[path][0]
+                    nextDir = path
+
+            shortest_path.append((currentNode, nextDir))
+            #print(shortest_path)
+            currentNode = nextNode
+
 
         return shortest_path
-        pass
+
