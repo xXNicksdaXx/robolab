@@ -118,10 +118,8 @@ class TestRoboLabPlanet(unittest.TestCase):
         Requirement: Minimum distance is three nodes (two paths in list returned)
         """
         #self.fail('implement me!')
-        target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST), ((1, 3), Direction.WEST)]
-        self.assertEqual(target_shortest_path, self.planet.shortest_path((0, 0), (0, 3)))
-        #self.planet.dijkstra((0, 0), (0, 3))
-
+        target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST)]
+        self.assertEqual(target_shortest_path, self.planet.shortest_path((0, 0), (1, 3)))
 
     def test_target_not_reachable(self):
         """
@@ -136,7 +134,9 @@ class TestRoboLabPlanet(unittest.TestCase):
 
         Requirement: Minimum of two paths with same cost exists, only one is returned by the logic implemented
         """
-        self.fail('implement me!')
+        #self.fail('implement me!')
+        target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.NORTH)]
+        self.assertEqual(target_shortest_path, self.planet.dijkstra((0, 0), (1, 4)))
 
     def test_target_with_loop(self):
         """
@@ -146,9 +146,8 @@ class TestRoboLabPlanet(unittest.TestCase):
         Result: Target is reachable
         """
         #self.fail('implement me!')
-        target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST),
-                                ((1, 3), Direction.WEST), ((0, 3), Direction.NORTH)]
-        self.assertEqual(target_shortest_path, self.planet.dijkstra((0, 0), (1, 4)))
+        target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST), ((1, 3), Direction.WEST)]
+        self.assertEqual(target_shortest_path, self.planet.dijkstra((0, 0), (0, 3)))
 
     def test_target_not_reachable_with_loop(self):
         """

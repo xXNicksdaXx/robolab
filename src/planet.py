@@ -130,6 +130,7 @@ class Planet:
         prev = {}
 
         shortest_path = []
+        shortest_path1 = []
 
         for v in vertex:
             dist[v] = math.inf
@@ -168,8 +169,10 @@ class Planet:
                 print(shortest_path)
                 uTraget = prev[uTraget][0]
 
-        print(shortest_path)
-        return shortest_path
+        while shortest_path:
+            shortest_path1.append(shortest_path.pop())
+            print(shortest_path1)
+        return shortest_path1
 
 
 
