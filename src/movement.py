@@ -12,11 +12,11 @@ class Movement:
     # ultrasonicSensor = ev3.UltrasonicSensor("in3")
 
     # pid variables
-    kp = 0.45
+    kp = 0.48
     ki = 0.0135
-    kd = 0.35
+    kd = 0.36
     offset = 170
-    targetPower = 150
+    targetPower = 200
     integral = 0
     lastError = 0
     derivative = 0
@@ -30,6 +30,7 @@ class Movement:
         self.leftMotor.stop_action = "brake"
         self.rightMotor.reset()
         self.rightMotor.stop_action = "brake"
+        self.config()
 
     # scans everything, for test
     def scan_detailed(self):
@@ -64,9 +65,9 @@ class Movement:
         rgb_tuple = (int(0.8 * rgb_tuple[0]), int(0.25 * rgb_tuple[1]), int(0.8 * rgb_tuple[2]))
 
         if rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
-            return "red"
+            return -1
         elif rgb_tuple[2] > rgb_tuple[0] + rgb_tuple[1]:
-            return "blue"
+            return -2
         else:
             return rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2]
 
@@ -134,53 +135,80 @@ class Movement:
     # 30 degree turn
     def turn_45(self):
         i = 0
-        while i < 350:
-            self.leftMotor.speed_sp = 80
+        while i < 60:
+            self.leftMotor.speed_sp = 120
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -80
+            self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
             i += 1
+        self.stop()
 
     # 90 degree turnaround
     def turn_90(self):
         i = 0
-        while i < 700:
-            self.leftMotor.speed_sp = 80
+        while i < 135:
+            self.leftMotor.speed_sp = 120
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -80
+            self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
             i += 1
+        self.stop()
 
     # 360 degree turnaround
     def turn_360(self):
         i = 0
-        while i < 2800:
-            self.leftMotor.speed_sp = 80
+        while i < 510:
+            self.leftMotor.speed_sp = 120
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -80
+            self.rightMotor.speed_sp = -120
             self.rightMotor.command = "run-forever"
             i += 1
+        self.stop()
+
+    def find_path(self):
+        while self.scan() > 60:
+            self.leftMotor.speed_sp = 120
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.speed_sp = -120
+            self.rightMotor.command = "run-forever"
+        while self.scan() < 80:
+            self.leftMotor.speed_sp = 120
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.speed_sp = -120
+            self.rightMotor.command = "run-forever"
+
+
+    # scans node for paths
+    def node(self, color):
+        print("! FOUND NODE !")
+        while self.scan() == color:
+            self.moveA(80)
+            self.moveC(80)
+        self.turn_45()
+        time.sleep(5)
+        self.turn_360()
+
 
     # central movement function - works with pid
     def follow_line(self):
         time.sleep(5)
         print("!!!!! End drive by pressing button !!!!!")
-        while self.button.value() == 0:
+        while self.button.value() == 0:         # condition for scan done
             colorValue = self.scan()
-            # if colorValue == "red" or colorValue == "blue":
-                # time.sleep(1)
-                # self.stop()
-                # break
-            # else:
-            error = colorValue - self.offset
-            self.integral = 0.67 * self.integral + error
-            self.derivative = error - self.lastError
-            turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
-            print(f"__turn: {turn}")
-            powerLeft = self.targetPower - turn
-            powerRight = self.targetPower + turn
-            self.moveA(powerLeft)
-            self.moveC(powerRight)
-            self.lastError = error
+            if colorValue == -1 or colorValue == -2:
+                self.stop()
+                self.node(colorValue)
+                break
+            else:
+                error = colorValue - self.offset
+                self.integral = 0.67 * self.integral + error
+                self.derivative = error - self.lastError
+                turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
+                print(f"__turn: {turn}")
+                powerLeft = self.targetPower - turn
+                powerRight = self.targetPower + turn
+                self.moveA(powerLeft)
+                self.moveC(powerRight)
+                self.lastError = error
 
         print("Drive stopped.")
