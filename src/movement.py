@@ -99,17 +99,18 @@ class Movement:
         print("--------------------------------------")
         time.sleep(3)
 
-    # left motor
+    # left motor movement
     def moveA(self, pl):
         self.leftMotor.speed_sp = pl
         self.leftMotor.command = "run-forever"
 
-    # right motor
+    # right motor movement
     def moveC(self, pr):
         self.rightMotor.speed_sp = pr
         self.rightMotor.command = "run-forever"
 
-    def find_parameters_per_tick(self):
+    # test function for finding parameters
+    def find_parameter_per_tick(self):
         i = 0
         while i < 1000:
             # colorValue = self.scan()
@@ -119,8 +120,8 @@ class Movement:
             turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
             powerLeft = self.targetPower - turn
             powerRight = self.targetPower + turn
-            self.moveA(80)
-            self.moveC(80)
+            self.moveA(110)
+            self.moveC(110)
             self.lastError = error
             i += 1
         print("test done")
@@ -130,13 +131,33 @@ class Movement:
         self.leftMotor.stop()
         self.rightMotor.stop()
 
+    # 30 degree turn
+    def turn_45(self):
+        i = 0
+        while i < 350:
+            self.leftMotor.speed_sp = 80
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.speed_sp = -80
+            self.rightMotor.command = "run-forever"
+            i += 1
+
     # 90 degree turnaround
     def turn_90(self):
         i = 0
-        while i < 1000:
-            self.leftMotor.speed_sp = 40
+        while i < 700:
+            self.leftMotor.speed_sp = 80
             self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -40
+            self.rightMotor.speed_sp = -80
+            self.rightMotor.command = "run-forever"
+            i += 1
+
+    # 360 degree turnaround
+    def turn_360(self):
+        i = 0
+        while i < 2800:
+            self.leftMotor.speed_sp = 80
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.speed_sp = -80
             self.rightMotor.command = "run-forever"
             i += 1
 
