@@ -4,6 +4,46 @@
 import json
 import platform
 import ssl
+import paho.mqtt.client as mqtt
+
+# this is a helper method that catches errors and prints them
+# it is necessary because on_message is called by paho-mqtt in a different thread and exceptions
+# are not handled in that thread
+#
+# you don't need to change this method at all
+def on_message_excepthandler(client, data, message):
+    try:
+        on_message(client, data, message)
+    except:
+        import traceback
+        traceback.print_exc()
+        raise
+
+# Callback function for receiving messages
+def on_message(client, data, message):
+    print('Got message with topic "{}":'.format(message.topic))
+    data = json.loads(message.payload.decode('utf-8'))
+    print(json.dumps(data, indent=2))
+    print("\n")
+
+
+# Basic configuration of MQTT
+client = mqtt.Client(client_id="<GROUP>", clean_session=False, protocol=mqtt.MQTTv31)
+
+client.on_message = on_message_excepthandler # Assign pre-defined callback function to MQTT client
+client.tls_set(tls_version=ssl.PROTOCOL_TLS)
+client.username_pw_set('<GROUP>', password='<PASS>') # Your group credentials
+client.connect('mothership.inf.tu-dresden.de', port=8883)
+client.subscribe('explorer/<GROUP>', qos=1) # Subscribe to topic explorer/xxx
+
+# Start listening to incoming messages
+client.loop_start()
+
+while True:
+	input('Press Enter to continue...\n')
+
+client.loop_stop()
+client.disconnect()
 
 # Fix: SSL certificate problem on macOS
 if all(platform.mac_ver()):
