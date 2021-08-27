@@ -58,11 +58,9 @@ class Planet:
                 return 0
             self.paths[start[0]][start[1]] = (target[0], target[1], weight)
             self.add_path(target, start, weight)
-            # self.paths[target[0]][target[1]] = (start[0], start[1], weight)
         else:
             self.paths[start[0]] = {start[1]: (target[0], target[1], weight)}
             self.add_path(target, start, weight)
-            # self.paths[target[0]] = {target[1]: (start[0], start[1], weight)}
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         """
@@ -85,21 +83,15 @@ class Planet:
         """
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-
         return self.paths
 
+    #Method to find the MinDistance
     def findMinimum(self, list: [], dict: {}):
 
         myList = []
         for l in list:
             myList.append((l, dict[l]))
-
         Min = min(myList, key=lambda t: t[1])
-
-        # Min = min(dict.values())
-        # for element in dict:
-        #     if dict[element] == Min:
-        #         return element
         return Min[0]
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
@@ -121,29 +113,29 @@ class Planet:
             print("Target not reachable")
             return None
 
+        #else if the target is reachable calculat Dijkstra and get the result path
         return self.dijkstra(start, target)
 
     def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
+
+        #Initialization
         Q = []
         vertex = self.paths.keys()
         dist = {}
         prev = {}
-
         shortest_path = []
         shortest_path1 = []
 
+        #all Nodes will get the weight Infinity
         for v in vertex:
             dist[v] = math.inf
-            #dist.append((v, math.inf))
             prev[v] = None
             Q.append(v)
 
         dist[start] = 0
 
         while Q:
-            print(Q)
             u = self.findMinimum(Q, dist)    #Node with minimum distance
-            print(u)
             Q.remove(u)
 
             if u == target:
@@ -159,19 +151,15 @@ class Planet:
                             Dir = n
                     prev[p[0]] = (u, Dir)
 
-        print(prev)
-
         uTraget = target
         if prev[uTraget] or uTraget == start:
             while prev[uTraget]:
-                print(prev[uTraget])
                 shortest_path.append(prev[uTraget])
-                print(shortest_path)
                 uTraget = prev[uTraget][0]
 
-        while shortest_path:
+        while shortest_path:  #to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
-            print(shortest_path1)
+            
         return shortest_path1
 
 
