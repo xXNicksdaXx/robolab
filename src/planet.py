@@ -3,6 +3,7 @@
 # Attention: Do not import the ev3dev.ev3 module in this file
 from enum import IntEnum, unique
 from typing import List, Tuple, Dict, Union
+import math
 
 
 @unique
@@ -87,6 +88,19 @@ class Planet:
 
         return self.paths
 
+    def findMinimum(self, list: [], dict: {}):
+
+        myList = []
+        for l in list:
+            myList.append((l, dict[l]))
+
+        Min = min(myList, key=lambda t: t[1])
+
+        # Min = min(dict.values())
+        # for element in dict:
+        #     if dict[element] == Min:
+        #         return element
+        return Min[0]
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
         """
@@ -107,42 +121,56 @@ class Planet:
             print("Target not reachable")
             return None
 
+        return self.dijkstra(start, target)
+
+    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
+        Q = []
+        vertex = self.paths.keys()
+        dist = {}
+        prev = {}
+
         shortest_path = []
-        visitedNodes = []
-        currentNode = start
 
-        while currentNode != target:
+        for v in vertex:
+            dist[v] = math.inf
+            #dist.append((v, math.inf))
+            prev[v] = None
+            Q.append(v)
 
-            visitedNodes.append(currentNode)
-            # print("crNode:" + str(currentNode))
-            # print("visitedNodes : "+ str(visitedNodes))
+        dist[start] = 0
 
-            possiblePaths = self.get_paths()[currentNode]           #Dictionary of all Possible Paths
-            # print("possiblePaths: "+ str(possiblePaths))
+        while Q:
+            print(Q)
+            u = self.findMinimum(Q, dist)    #Node with minimum distance
+            print(u)
+            Q.remove(u)
 
-            maxWeight = max(possiblePaths.values(), key=lambda t: t[2])[2]  #to chose the minimal Weight begin with the maximal weight
-            #print("MaxWeight : "+ str(maxWeight))
+            if u == target:
+                break
+            for p in self.paths[u].values():  #p = (Node, Dir, Weight)
+                alt = dist[u] + p[2]
+                if alt < dist[p[0]]:
+                    dist[p[0]] = alt
 
-            #initialization but will be changed later
-            nextDir = Direction.NORTH
-            nextNode = (0, 0)
+                    Dir = Direction.NORTH
+                    for n in self.paths[u]:
+                        if self.paths[u][n] == p:
+                            Dir = n
+                    prev[p[0]] = (u, Dir)
 
-            #compare all Weights to find the minimum
-            for path in possiblePaths:
-                #print("for loop")
-                #print(possiblePaths[path][2])
+        print(prev)
 
-                # to avoid any loops check if the next node has ben visited
-                if possiblePaths[path][2] <= maxWeight and (possiblePaths[path][0] not in visitedNodes):
+        uTraget = target
+        if prev[uTraget] or uTraget == start:
+            while prev[uTraget]:
+                print(prev[uTraget])
+                shortest_path.append(prev[uTraget])
+                print(shortest_path)
+                uTraget = prev[uTraget][0]
 
-                    maxWeight = possiblePaths[path][2]
-                    nextNode = possiblePaths[path][0]
-                    nextDir = path
-
-            shortest_path.append((currentNode, nextDir))
-            #print(shortest_path)
-            currentNode = nextNode
-
-
+        print(shortest_path)
         return shortest_path
+
+
+
 

@@ -59,6 +59,8 @@ class TestRoboLabPlanet(unittest.TestCase):
         self.planet.add_path(((0, 3), Direction.EAST), ((1, 3), Direction.WEST), 1)
         self.planet.add_path(((0, 3), Direction.NORTH), ((1, 4), Direction.WEST), 6)
         self.planet.add_path(((1, 3), Direction.NORTH), ((1, 3), Direction.EAST), 1)
+        self.planet.add_path(((0, 2), Direction.NORTH), ((1, 4), Direction.NORTH), 2)
+
         self.target_dict = {
             (0, 0): {
                 Direction.NORTH: ((0, 1), Direction.SOUTH, 1)
@@ -74,7 +76,8 @@ class TestRoboLabPlanet(unittest.TestCase):
             (0, 2): {
                 Direction.SOUTH: ((0, 1), Direction.NORTH, 1),
                 Direction.WEST: ((0, 3), Direction.SOUTH, 5),
-                Direction.EAST: ((1, 3), Direction.SOUTH, 2)
+                Direction.EAST: ((1, 3), Direction.SOUTH, 2),
+                Direction.NORTH: ((1, 4), Direction.NORTH, 2)
             },
             (0, 3): {
                 Direction.SOUTH: ((0, 2), Direction.WEST, 5),
@@ -88,7 +91,8 @@ class TestRoboLabPlanet(unittest.TestCase):
                 Direction.EAST: ((1, 3), Direction.NORTH, 1)
             },
             (1, 4): {
-                Direction.WEST: ((0, 3), Direction.NORTH, 6)
+                Direction.WEST: ((0, 3), Direction.NORTH, 6),
+                Direction.NORTH: ((0, 2), Direction.NORTH, 2)
             }
         }
 
@@ -116,6 +120,7 @@ class TestRoboLabPlanet(unittest.TestCase):
         #self.fail('implement me!')
         target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST), ((1, 3), Direction.WEST)]
         self.assertEqual(target_shortest_path, self.planet.shortest_path((0, 0), (0, 3)))
+        #self.planet.dijkstra((0, 0), (0, 3))
 
 
     def test_target_not_reachable(self):
@@ -140,7 +145,10 @@ class TestRoboLabPlanet(unittest.TestCase):
 
         Result: Target is reachable
         """
-        self.fail('implement me!')
+        #self.fail('implement me!')
+        target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST),
+                                ((1, 3), Direction.WEST), ((0, 3), Direction.NORTH)]
+        self.assertEqual(target_shortest_path, self.planet.dijkstra((0, 0), (1, 4)))
 
     def test_target_not_reachable_with_loop(self):
         """
@@ -149,7 +157,8 @@ class TestRoboLabPlanet(unittest.TestCase):
 
         Result: Target is not reachable
         """
-        self.fail('implement me!')
+        #self.fail('implement me!')
+        self.assertIsNone(self.planet.shortest_path((0, 0), (-1, 3)))
 
 
 if __name__ == "__main__":
