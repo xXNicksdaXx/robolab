@@ -30,9 +30,6 @@ class Planet:
     Contains the representation of the map and provides certain functions to manipulate or extend
     it according to the specifications
     """
-
-
-
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
@@ -169,19 +166,48 @@ class Planet:
 
         return shortest_path1
 
-    def addExploredNode(self, node: Tuple[int, int], directions: List[Tuple[Direction, int]]):
-        self.exploredNodes[node] = directions
+
+    def setPriorityList(self, direction: List[Direction]):
+        #not sure about this implementation
+        prioDir = []
+        for d in direction:
+            if d == Direction.NORTH:
+                prioDir.append((d, 4))
+            elif d == Direction.SOUTH:
+                prioDir.append((d, 1))
+            elif d == Direction.WEST:
+                prioDir.append((d, 2))
+            else:
+                prioDir.append((d, 3))
+
+        return prioDir
+
+    def addExploredNode(self, node: Tuple[int, int], directions: List[Direction]):
+        prioDir = self.setPriorityList(directions)
+        self.exploredNodes[node] = prioDir
 
     def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
         for a in self.exploredNodes[node]:
             if a[0] == direction:
                 a[1] = priority
 
-    def chose_directon(self, node: Tuple[int, int]):
+    def chose_direction(self, node: Tuple[int, int]):
         bestPriority = max(self.exploredNodes[node], key=lambda t: t[1])
         return bestPriority[0]
 
-    
+    def explor(self, node: Tuple[int, int], directions: List[int]):
+
+        myDirections = []
+        for d in directions:
+            myDirections.append(Direction(d))
+
+        self.addExploredNode(node, self.setPriorityList(myDirections))
+
+        return self.chose_direction(node)
+
+
+
+
 
 
 
