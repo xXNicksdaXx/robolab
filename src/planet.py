@@ -36,7 +36,10 @@ class Planet:
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
+
         self.paths = {}
+        self.exploredNodes = {}
+
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):
         """
@@ -81,7 +84,6 @@ class Planet:
             }
         :return: Dict
         """
-
         # YOUR CODE FOLLOWS (remove pass, please!)
         return self.paths
 
@@ -132,6 +134,11 @@ class Planet:
             prev[v] = None
             Q.append(v)
 
+        #Remove all blocked paths
+        for q in Q:
+            if dist[q] == -1:
+                Q.remove(q)
+
         dist[start] = 0
 
         while Q:
@@ -159,8 +166,25 @@ class Planet:
 
         while shortest_path:  #to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
-            
+
         return shortest_path1
+
+    def addExploredNode(self, node: Tuple[int, int], directions: List[Tuple[Direction, int]]):
+        self.exploredNodes[node] = directions
+
+    def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
+        for a in self.exploredNodes[node]:
+            if a[0] == direction:
+                a[1] = priority
+
+    def chose_directon(self, node: Tuple[int, int]):
+        bestPriority = max(self.exploredNodes[node], key=lambda t: t[1])
+        return bestPriority[0]
+
+    
+
+
+
 
 
 
