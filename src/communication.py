@@ -28,13 +28,13 @@ def on_message(client, data, message):
 
 
 # Basic configuration of MQTT
-client = mqtt.Client(client_id="<GROUP>", clean_session=False, protocol=mqtt.MQTTv31)
+client = mqtt.Client(client_id="explprer/125", clean_session=False, protocol=mqtt.MQTTv31)
 
 client.on_message = on_message_excepthandler # Assign pre-defined callback function to MQTT client
 client.tls_set(tls_version=ssl.PROTOCOL_TLS)
-client.username_pw_set('<GROUP>', password='<PASS>') # Your group credentials
+client.username_pw_set('explorer/125', password='IWDwkt9Ao3') # Your group credentials
 client.connect('mothership.inf.tu-dresden.de', port=8883)
-client.subscribe('explorer/<GROUP>', qos=1) # Subscribe to topic explorer/xxx
+client.subscribe('explorer/125', qos=1) # Subscribe to topic explorer/xxx
 
 # Start listening to incoming messages
 client.loop_start()
