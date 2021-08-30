@@ -151,7 +151,7 @@ class Communication:
         :param pathStatus: String free|blocked
         :return: void
         """
-        smessage = {"from": "client", "type": "path",
+        sdmessage = {"from": "client", "type": "path",
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
                                 "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
-        self.send_message(self.planetsub, smessage)
+        self.send_message(self.planetsub, sdmessage)
