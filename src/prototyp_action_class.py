@@ -47,7 +47,7 @@ class prototyp_actions_class:
 
         # turn 360 dgree and return to the node befor
         #after return change the current dircetion
-        self.current_direction = Direction((int(self.current_direction) + 180)%360)
+        self.current_direction = Direction((int(self.current_direction) + 180) % 360)
 
 
 
