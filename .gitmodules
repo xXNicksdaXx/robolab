@@ -1,4 +1,4 @@
 [submodule "robolab-deploy"]
 	path = robolab-deploy
-	url = ../robolab-deploy.git
+	url = ../../../robolab/robolab-deploy.git
 	branch = master
