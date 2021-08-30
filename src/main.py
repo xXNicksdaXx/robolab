@@ -39,7 +39,7 @@ def run():
     print("-------------------- ROBOT --------------------")
     od = Odometry()
     mo = Movement()
-<<<<<<< HEAD
+
     # mo.turn_90()
     # time.sleep(2)
     # mo.turn_360()
@@ -47,9 +47,7 @@ def run():
     # mo.turn_45()
     test = mo.follow_line()
     od.calculate(test, 0, 0, Direction.NORTH)
-=======
-    mo.follow_line()
->>>>>>> 16fea2c90144e4718965eb40de5046246e3298ff
+
     print("-----------------------------------------------")
 
 
