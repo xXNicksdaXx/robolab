@@ -156,3 +156,20 @@ class Communication:
                                 "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
         self.send_message(self.planetsub, sdmessage)
 
+    def send_path_invalid(self, startX, startY, startD, endXc, endYc, endDc, pathStatus):
+        """
+               Send message of the type "path"
+               :param startX: integer
+               :param startY: integer
+               :param startD: integer
+               :param endXc: integer
+               :param endYc: integer
+               :param endDc: integer
+               :param pathStatus: String free|blocked
+               :return: void
+               """
+        sdmessage = {"from": "client", "type": "path",
+                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endXc": endXc,
+                                 "endYc": endYc, "endDirection": endDc, "pathStatus": pathStatus}}
+        self.send_message(self.planetsub, sdmessage)
+
