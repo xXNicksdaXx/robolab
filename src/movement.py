@@ -24,6 +24,7 @@ class Movement:
     # config colors
     black = 50
     white = 330
+    celestials = ["north", "east", "south", "west"]
 
     def __init__(self):
         self.leftMotor.reset()
@@ -102,14 +103,14 @@ class Movement:
         rgb_tuple = self.colorSensor.bin_data("hhh")
         rgb_tuple = (int(0.8 * rgb_tuple[0]), int(0.25 * rgb_tuple[1]), int(0.8 * rgb_tuple[2]))
 
-        if rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
-            return "red"
-        elif rgb_tuple[2] > rgb_tuple[0] + rgb_tuple[1]:
-            return "blue"
+        if rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] > 250:
+            return "white"
         elif rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] < 70:
             return "black"
-        elif rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] > 250:
-            return "white"
+        elif rgb_tuple[2] > rgb_tuple[0] + rgb_tuple[1]:
+            return "blue"
+        elif rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
+            return "red"
         else:
             return "other"
 
@@ -181,6 +182,8 @@ class Movement:
     # central movement function - works with pid
     def follow_line(self):
         time.sleep(5)
+        leftList = []
+        rightList = []
         print("!!!!! End drive by pressing button !!!!!")
         while self.button.value() == 0:  # condition for scan done
             colorValue = self.scan()
@@ -193,9 +196,10 @@ class Movement:
                 self.integral = 0.67 * self.integral + error
                 self.derivative = error - self.lastError
                 turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
-                print(f"__turn: {turn}")
                 powerLeft = self.targetPower - turn
                 powerRight = self.targetPower + turn
+                leftList.append(powerLeft)
+                rightList.append(powerRight)
                 self.moveA(powerLeft)
                 self.moveC(powerRight)
                 self.lastError = error
@@ -221,22 +225,24 @@ class Movement:
         self.stop()
         print(f"counted paths: {k}")
 
+    # counts paths of a node
     def count_path(self):
         self.leftMotor.speed_sp = 75
         self.rightMotor.speed_sp = -80
         current = "white"
-        k = 0
+        path = 0
         i = 0
         while i < 4:
             j = 0
-            while j < 630:
+            while j < 185:
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()
                 if current != new_scan:
                     if current == "white":
-                        k += 1
+                        path += 1
                     current = new_scan
+                j += 1
             i += 1
         self.stop()
-        return k
+        return path
