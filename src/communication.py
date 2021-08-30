@@ -17,7 +17,7 @@ class Communication:
     Feel free to add functions and update the constructor to satisfy your requirements and
     thereby solve the task according to the specifications
     """
-    planet_sub = None
+    planetsub = None
     q = Queue()
 
     # this is a helper method that catches errors and prints them
@@ -110,7 +110,7 @@ class Communication:
         self.logger.debug(json.dumps(message, indent=2))
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+        self.client.publish(topic, json.dumps(message), qos=1)
 
     # DO NOT EDIT THE METHOD SIGNATURE OR BODY
     #
