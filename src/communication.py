@@ -130,3 +130,12 @@ class Communication:
             import traceback
             traceback.print_exc()
             raise
+
+    def send_ready(self):
+        """
+        Send message of the type "ready"
+        :return: void
+        """
+        sdmessage = {"from": "client", "type": "ready"}
+        self.send_message("explorer/125", sdmessage)
+
