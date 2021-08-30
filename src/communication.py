@@ -46,7 +46,6 @@ class Communication:
         self.client.on_message = self.safe_on_message_handler
         # Add your client setup here
         self.client = mqtt.Client(client_id="MQTT_FX_Client", clean_session=False, protocol=mqtt.MQTTv31)
-
         self.client.username_pw_set('125', password='IWDwkt9Ao3')  # Your group credentials
         self.client.connect('mothership.inf.tu-dresden.de', port=8883)
         self.client.subscribe('explorer/125', qos=1)  # Subscribe to topic explorer/xxx
@@ -184,3 +183,16 @@ class Communication:
         sdmessage = {"from": "client", "type": "pathSelect",
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD}}
         self.send_message(self.planetsub, sdmessage)
+
+    def send_complete(self, finished):
+            """
+            Sends message of the type "targetReached" or "explorationCompleted"
+            :param finished: boolean
+            :return: void
+            """
+            sdmessage = {"from": "client", "type": "targetReached",
+                        "payload": {"message": "Explorer/125 erledigt die Aufgabe!"}}
+            if finished:
+                sdmessage.update({"type": "explorationCompleted"})
+            self.send_message("explorer/125", sdmessage)
+
