@@ -9,6 +9,7 @@ import uuid
 import signal
 from odometry import Odometry
 from movement import Movement
+from planet import Planet, Direction
 
 client = None  # DO NOT EDIT
 
@@ -38,11 +39,13 @@ def run():
     print("-------------------- ROBOT --------------------")
     od = Odometry()
     mo = Movement()
-    mo.turn_90()
-    time.sleep(2)
-    mo.turn_360()
-    time.sleep(2)
-    mo.turn_45()
+    # mo.turn_90()
+    # time.sleep(2)
+    # mo.turn_360()
+    # time.sleep(2)
+    # mo.turn_45()
+    test = mo.follow_line()
+    od.calculate(test, 0, 0, Direction.NORTH)
     print("-----------------------------------------------")
 
 
