@@ -158,7 +158,7 @@ class Communication:
 
     def send_path_invalid(self, startX, startY, startD, endXc, endYc, endDc, pathStatus):
         """
-               Send message of the type "path"
+               Send message of the type "path_invalid"
                :param startX: integer
                :param startY: integer
                :param startD: integer
@@ -173,3 +173,14 @@ class Communication:
                                  "endYc": endYc, "endDirection": endDc, "pathStatus": pathStatus}}
         self.send_message(self.planetsub, sdmessage)
 
+    def send_pathSelect(self, startX, startY, startD):
+        """
+        Send message of the type "pathSelect"
+        :param startX: integer
+        :param startY: integer
+        :param startD: integer
+        :return: void
+        """
+        sdmessage = {"from": "client", "type": "pathSelect",
+                    "payload": {"startX": startX, "startY": startY, "startDirection": startD}}
+        self.send_message(self.planetsub, sdmessage)
