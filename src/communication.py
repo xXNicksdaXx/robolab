@@ -5,6 +5,7 @@ import json
 import platform
 import ssl
 import paho.mqtt.client as mqtt
+from queue import Queue
 
 # Fix: SSL certificate problem on macOS
 if all(platform.mac_ver()):
@@ -16,7 +17,8 @@ class Communication:
     Feel free to add functions and update the constructor to satisfy your requirements and
     thereby solve the task according to the specifications
     """
-
+    planet_sub = None
+    q = Queue()
 
     # this is a helper method that catches errors and prints them
     # it is necessary because on_message is called by paho-mqtt in a different thread and exceptions
@@ -91,7 +93,7 @@ class Communication:
                 self.client.subscribe(self.planetsub)
 
             if payload['type'] in targets:
-                self.mq.put(targets[payload['type']])
+                self.q.put(targets[payload['type']])
 
     # DO NOT EDIT THE METHOD SIGNATURE
     #
