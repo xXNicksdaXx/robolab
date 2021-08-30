@@ -49,11 +49,6 @@ class Odometry:
             old_Y = new_Y
             old_Dir = new_Dir
 
-<<<<<<< HEAD
-        # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
-
-=======
         print("new Coordinates: " + str(old_X) + ", " + str(old_Y))
         return ((old_X, old_Y), math.degrees(old_Dir))
->>>>>>> origin/odometry
+
