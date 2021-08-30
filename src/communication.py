@@ -17,6 +17,7 @@ class Communication:
     thereby solve the task according to the specifications
     """
 
+
     # this is a helper method that catches errors and prints them
     # it is necessary because on_message is called by paho-mqtt in a different thread and exceptions
     # are not handled in that thread
@@ -72,7 +73,25 @@ class Communication:
         self.logger.debug(json.dumps(payload, indent=2))
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+        info = payload["payload"]
+        if payload["from"] == "server":
+            targets = {
+                "planet": ((info["startX"], info["startY"]), info["startOrientation"]),
+                "path": (((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"]),
+                "pathSelect": info["startDirection"],
+                "pathUnveiled": (
+                    ((info["startX"], info["startY"]), info["startDirection"]),
+                    ((info["endX"], info["endY"]), info["endDirection"]),
+                    info["pathWeight"]
+                ),
+                "target": (info["targetX"], info["targetY"])
+            }
+            if payload["type"] == "planet":
+                self.planetsub = "planet/" + info["planetName"] + "/125"
+                self.client.subscribe(self.planetsub)
+
+            if payload['type'] in targets:
+                self.mq.put(targets[payload['type']])
 
     # DO NOT EDIT THE METHOD SIGNATURE
     #
