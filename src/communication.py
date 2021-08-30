@@ -139,3 +139,19 @@ class Communication:
         sdmessage = {"from": "client", "type": "ready"}
         self.send_message("explorer/125", sdmessage)
 
+    def send_path(self, startX, startY, startD, endX, endY, endD, pathStatus):
+        """
+        Send message of the type "path"
+        :param startX: integer
+        :param startY: integer
+        :param startD: integer
+        :param endX: integer
+        :param endY: integer
+        :param endD: integer
+        :param pathStatus: String free|blocked
+        :return: void
+        """
+        smessage = {"from": "client", "type": "path",
+                    "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
+                                "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
+        self.send_message(self.planetsub, smessage)
