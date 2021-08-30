@@ -52,14 +52,6 @@ class Communication:
 
         self.logger = logger
 
-    # Start listening to incoming messages
-    client.loop_start()
-
-    while True:
-        input('Press Enter to continue...\n')
-
-    client.loop_stop()
-    client.disconnect()
 
     # DO NOT EDIT THE METHOD SIGNATURE
     def on_message(self, client, data, message):
