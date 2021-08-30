@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 
-import ev3dev.ev3 as ev3
 import logging
 import os
+
 import paho.mqtt.client as mqtt
 import uuid
 import signal
-
-from communication import Communication
 from odometry import Odometry
-from planet import Direction, Planet
+from movement import Movement
 
 client = None  # DO NOT EDIT
 
@@ -36,7 +34,11 @@ def run():
     # THE EXECUTION OF ALL CODE SHALL BE STARTED FROM WITHIN THIS FUNCTION.
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
-    print("Hello World!")
+    print("-------------------- ROBOT --------------------")
+    od = Odometry()
+    mo = Movement()
+    mo.follow_line()
+    print("-----------------------------------------------")
 
 
 # DO NOT EDIT
