@@ -2,6 +2,8 @@
 import ev3dev.ev3 as ev3
 import time
 
+celestials = ["north", "east", "south", "west"]
+
 
 class Movement:
     # components
@@ -215,7 +217,7 @@ class Movement:
         while self.scan() == color:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
-        while i < 200:
+        while i < 190:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -229,20 +231,19 @@ class Movement:
     def count_path(self):
         self.leftMotor.speed_sp = 75
         self.rightMotor.speed_sp = -80
-        current = "white"
-        path = 0
+        path = {}
         i = 0
         while i < 4:
             j = 0
+            found = False
             while j < 185:
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()
-                if current != new_scan:
-                    if current == "white":
-                        path += 1
-                    current = new_scan
+                if new_scan == "black":
+                    found = True
                 j += 1
+            path[celestials[i]] = found
             i += 1
         self.stop()
         return path
