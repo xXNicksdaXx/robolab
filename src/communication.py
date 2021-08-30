@@ -155,3 +155,4 @@ class Communication:
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
                                 "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
         self.send_message(self.planetsub, sdmessage)
+
