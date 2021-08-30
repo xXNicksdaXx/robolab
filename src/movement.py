@@ -2,8 +2,6 @@
 import ev3dev.ev3 as ev3
 import time
 
-celestials = ["north", "east", "south", "west"]
-
 
 class Movement:
     # components
@@ -11,11 +9,11 @@ class Movement:
     rightMotor = ev3.LargeMotor("outC")
     colorSensor = ev3.ColorSensor("in1")
     button = ev3.TouchSensor("in2")
-    # ultrasonicSensor = ev3.UltrasonicSensor("in3")
+    ultrasonicSensor = ev3.UltrasonicSensor("in3")
 
     # pid variables
-    kp = 0.56
-    ki = 0.015
+    kp = 0.6
+    ki = 0.02
     kd = 0.38
     offset = 170
     targetPower = 200
@@ -131,23 +129,6 @@ class Movement:
         self.leftMotor.stop()
         self.rightMotor.stop()
 
-    # test function for finding parameters
-    def find_parameter_per_tick(self):
-        i = 0
-        while i < 1000:
-            # colorValue = self.scan()
-            error = 1 - self.offset
-            self.integral = 0.67 * self.integral + error
-            self.derivative = error - self.lastError
-            turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
-            powerLeft = self.targetPower - turn
-            powerRight = self.targetPower + turn
-            self.moveA(110)
-            self.moveC(110)
-            self.lastError = error
-            i += 1
-        print("test done")
-
     # 30 degree turn
     def turn_45(self):
         i = 0
@@ -165,6 +146,28 @@ class Movement:
         self.leftMotor.speed_sp = 75
         self.rightMotor.speed_sp = -80
         while i < 630:
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+            i += 1
+        self.stop()
+
+    # 180 degree turnaround
+    def turn_180(self):
+        i = 0
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
+        while i < 1260:
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+            i += 1
+        self.stop()
+
+    # 270 degree turnaround
+    def turn_270(self):
+        i = 0
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
+        while i < 1890:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -226,24 +229,44 @@ class Movement:
         k = self.count_path()
         self.stop()
         print(f"counted paths: {k}")
+        self.next_path()
+        self.follow_line()
 
     # counts paths of a node
     def count_path(self):
         self.leftMotor.speed_sp = 75
         self.rightMotor.speed_sp = -80
-        path = {}
+        path = []
         i = 0
         while i < 4:
             j = 0
             found = False
-            while j < 185:
+            while j < 180:
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()
                 if new_scan == "black":
                     found = True
                 j += 1
-            path[celestials[i]] = found
+            if found:
+                path.append(i * 90)
             i += 1
         self.stop()
         return path
+
+    # find next path
+    def next_path(self):
+        degree = 90         # HERE: which path to choose, best case in degree!
+        if degree == 90:
+            self.turn_90()
+        elif degree == 180:
+            self.turn_180()
+        elif degree == 270:
+            self.turn_270()
+
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
+        while self.scan_absolute() == "white":
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+        self.stop()
