@@ -2,14 +2,12 @@
 
 import logging
 import os
-import time
 
 import paho.mqtt.client as mqtt
 import uuid
 import signal
 from odometry import Odometry
 from movement import Movement
-from planet import Planet, Direction
 
 client = None  # DO NOT EDIT
 
@@ -39,17 +37,7 @@ def run():
     print("-------------------- ROBOT --------------------")
     od = Odometry()
     mo = Movement()
-<<<<<<< HEAD
-    # mo.turn_90()
-    # time.sleep(2)
-    # mo.turn_360()
-    # time.sleep(2)
-    # mo.turn_45()
-    test = mo.follow_line()
-    od.calculate(test, 0, 0, Direction.NORTH)
-=======
     mo.follow_line()
->>>>>>> 16fea2c90144e4718965eb40de5046246e3298ff
     print("-----------------------------------------------")
 
 

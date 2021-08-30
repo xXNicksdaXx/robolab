@@ -1,6 +1,7 @@
 # !/usr/bin/env python3
 import ev3dev.ev3 as ev3
 import time
+from odometry import Odometry
 
 
 class Movement:
@@ -10,32 +11,35 @@ class Movement:
     colorSensor = ev3.ColorSensor("in1")
     button = ev3.TouchSensor("in2")
     ultrasonicSensor = ev3.UltrasonicSensor("in3")
+    led = ev3.Leds()
+    speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.63
-    ki = 0.025
-    kd = 0.38
+    kp = 0.69
+    ki = 0.028
+    kd = 0.35
     offset = 170
     targetPower = 200
     integral = 0
     lastError = 0
     derivative = 0
 
-    # config colors
-    black = 50
-    white = 330
-
     def __init__(self):
         self.leftMotor.reset()
         self.leftMotor.stop_action = "brake"
         self.rightMotor.reset()
         self.rightMotor.stop_action = "brake"
-        self.ultrasonicSensor.mode = 'US-SI-CM'
+        self.ultrasonicSensor.mode = "US-SI-CM"
+        self.odometry = Odometry()
+        self.data = []
+        self.black = 50
+        self.white = 300
         self.config()
 
     # sets black & white color before start
     def config(self):
-        led = ev3.Leds.RED
+        # self.led.set_color('LEFT', 'AMBER')
+        # self.led.set_color('RIGHT', 'AMBER')
         print("--> CONFIG")
         print("1. black")
         print("2. white")
@@ -51,13 +55,12 @@ class Movement:
         while not set_white:
             if self.button.value() == 1:
                 self.white = self.scan()
-                print(f"** set black: {self.white}")
+                print(f"** set white: {self.white}")
                 set_white = True
         self.offset = (self.white + self.black) * 0.5
         print(f"** set offset: {self.offset}")
         print("Config done.")
         print("")
-        led = ev3.Leds.GREEN
         time.sleep(3)
 
     # scans important parameter
@@ -192,20 +195,22 @@ class Movement:
         if d < 10:
             self.stop()
             print("! FOUND ASTEROID !")
-            ev3.Sound.beep()
+            self.speaker.beep()
             self.turn_180()
 
     # central movement function - works with pid
     def follow_line(self):
-        time.sleep(5)
-        leftList = []
-        rightList = []
-        print("!!!!! End drive by pressing button !!!!!")
+        time.sleep(2)
+        self.data = []  # clearing odometry
+        print("note: end drive by pressing button")
         while self.button.value() == 0:  # condition for scan done
             self.distance()
             colorValue = self.scan()
             if colorValue == -1 or colorValue == -2:
                 self.stop()
+                print(self.data)
+                l = self.odometry.calculate(self.data, 1, 0, 0)
+                print(f"RESULT: {l}")
                 self.node(colorValue)
                 break
             else:
@@ -215,13 +220,11 @@ class Movement:
                 turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
                 powerLeft = self.targetPower - turn
                 powerRight = self.targetPower + turn
-                leftList.append(powerLeft)      # filler for odometry
-                rightList.append(powerRight)    # filler for odometry
+                self.data.append((self.leftMotor.position, self.rightMotor.position))
                 self.moveA(powerLeft)
                 self.moveC(powerRight)
                 self.lastError = error
-
-        print("Drive stopped.")
+        print("drive stopped.")
 
     # scans node for paths
     def node(self, color):
@@ -244,8 +247,7 @@ class Movement:
         k = self.count_path()
         self.stop()
         print(f"counted paths: {k}")
-        self.next_path()
-        self.follow_line()
+        self.next_path(90)
 
     # counts paths of a node
     def count_path(self):
@@ -270,8 +272,8 @@ class Movement:
         return path
 
     # find next path
-    def next_path(self):
-        degree = 90         # HERE: which path to choose, best case in degree!
+    def next_path(self, d):
+        degree = d  # HERE: which path to choose, in degree!
         if degree == 90:
             self.turn_90()
         elif degree == 180:
