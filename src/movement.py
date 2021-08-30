@@ -12,9 +12,9 @@ class Movement:
     # ultrasonicSensor = ev3.UltrasonicSensor("in3")
 
     # pid variables
-    kp = 0.48
-    ki = 0.0135
-    kd = 0.36
+    kp = 0.56
+    ki = 0.015
+    kd = 0.38
     offset = 170
     targetPower = 200
     integral = 0
@@ -34,7 +34,7 @@ class Movement:
 
     # sets black & white color before start
     def config(self):
-        print("--------------- CONFIG ---------------")
+        print("--> CONFIG")
         print("1. black")
         print("2. white")
         set_black = False
@@ -43,18 +43,18 @@ class Movement:
         while not set_black:
             if self.button.value() == 1:
                 self.black = self.scan()
-                print(f"** set BLACK: {self.black}")
+                print(f"** set black: {self.black}")
                 set_black = True
         time.sleep(1)
         while not set_white:
             if self.button.value() == 1:
                 self.white = self.scan()
-                print(f"** set WHITE: {self.white}")
+                print(f"** set black: {self.white}")
                 set_white = True
         self.offset = (self.white + self.black) * 0.5
-        print(f"** set OFFSET: {self.offset}")
+        print(f"** set offset: {self.offset}")
         print("Config done.")
-        print("--------------------------------------")
+        print("")
         time.sleep(3)
 
     # scans everything, for test
@@ -123,6 +123,11 @@ class Movement:
         self.rightMotor.speed_sp = pr
         self.rightMotor.command = "run-forever"
 
+    # stops robot movement
+    def stop(self):
+        self.leftMotor.stop()
+        self.rightMotor.stop()
+
     # test function for finding parameters
     def find_parameter_per_tick(self):
         i = 0
@@ -140,17 +145,12 @@ class Movement:
             i += 1
         print("test done")
 
-    # stops robot movement
-    def stop(self):
-        self.leftMotor.stop()
-        self.rightMotor.stop()
-
     # 30 degree turn
     def turn_45(self):
         i = 0
-        self.leftMotor.speed_sp = -90
-        self.rightMotor.speed_sp = 90
-        while i < 200:
+        self.leftMotor.speed_sp = -70
+        self.rightMotor.speed_sp = 65
+        while i < 311:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -159,9 +159,9 @@ class Movement:
     # 90 degree turnaround
     def turn_90(self):
         i = 0
-        self.leftMotor.speed_sp = 90
-        self.rightMotor.speed_sp = -90
-        while i < 420:
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
+        while i < 630:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -172,48 +172,11 @@ class Movement:
         i = 0
         self.leftMotor.speed_sp = 90
         self.rightMotor.speed_sp = -90
-        while i < 1530:
+        while i < 2530:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
         self.stop()
-
-    def find_path(self):
-        while self.scan() > 60:
-            self.leftMotor.speed_sp = 120
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -120
-            self.rightMotor.command = "run-forever"
-        while self.scan() < 80:
-            self.leftMotor.speed_sp = 120
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -120
-            self.rightMotor.command = "run-forever"
-
-    # scans node for paths
-    def node(self, color):
-        print("! FOUND NODE !")
-        while self.scan() == color:
-            self.moveA(80)
-            self.moveC(80)
-        self.moveA()
-        self.turn_45()
-        time.sleep(2)
-        c = "white"
-        k = 0
-        i = 0
-        while i < 510:
-            self.leftMotor.speed_sp = 120
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.speed_sp = -120
-            self.rightMotor.command = "run-forever"
-            new_scan = self.scan_absolute()
-            if c != new_scan:
-                c = new_scan
-                k += 1
-            i += 1
-        self.stop()
-        print(k)
 
     # central movement function - works with pid
     def follow_line(self):
@@ -238,3 +201,42 @@ class Movement:
                 self.lastError = error
 
         print("Drive stopped.")
+
+    # scans node for paths
+    def node(self, color):
+        print("! FOUND NODE !")
+        i = 0
+        self.leftMotor.speed_sp = 80
+        self.rightMotor.speed_sp = 80
+        while self.scan() == color:
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+        while i < 200:
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+            i += 1
+        self.turn_45()
+        time.sleep(1)
+        k = self.count_path()
+        self.stop()
+        print(f"counted paths: {k}")
+
+    def count_path(self):
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
+        current = "white"
+        k = 0
+        i = 0
+        while i < 4:
+            j = 0
+            while j < 630:
+                self.leftMotor.command = "run-forever"
+                self.rightMotor.command = "run-forever"
+                new_scan = self.scan_absolute()
+                if current != new_scan:
+                    if current == "white":
+                        k += 1
+                    current = new_scan
+            i += 1
+        self.stop()
+        return k
