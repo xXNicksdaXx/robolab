@@ -200,6 +200,8 @@ class Movement:
 
     # central movement function - works with pid
     def follow_line(self):
+        prevLeft = 0
+        prevRight = 0
         time.sleep(2)
         self.data = []  # clearing odometry
         print("note: end drive by pressing button")
@@ -220,7 +222,11 @@ class Movement:
                 turn = self.kp * error + self.ki * self.integral + self.kd * self.derivative
                 powerLeft = self.targetPower - turn
                 powerRight = self.targetPower + turn
-                self.data.append((self.leftMotor.position, self.rightMotor.position))
+                newLeft = self.leftMotor.position
+                newRight = self.rightMotor.position
+                self.data.append((newLeft - prevLeft, newRight - prevRight))
+                prevLeft = newLeft
+                prevRight = newRight
                 self.moveA(powerLeft)
                 self.moveC(powerRight)
                 self.lastError = error
