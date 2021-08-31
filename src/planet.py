@@ -3,6 +3,7 @@
 # Attention: Do not import the ev3dev.ev3 module in this file
 from enum import IntEnum, unique
 from typing import List, Tuple, Dict, Union
+import math
 
 
 @unique
@@ -29,10 +30,12 @@ class Planet:
     Contains the representation of the map and provides certain functions to manipulate or extend
     it according to the specifications
     """
-
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
+
+        self.paths = {}
+        self.exploredNodes = {}
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):
@@ -46,9 +49,18 @@ class Planet:
         :param weight: Integer
         :return: void
         """
-
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+
+       # if the Node is already discovered
+        if start[0] in self.paths:
+            # if the Path exist in the Dictionary
+            if start[1] in self.paths[start[0]]:
+                return 0
+            self.paths[start[0]][start[1]] = (target[0], target[1], weight)
+            self.add_path(target, start, weight)
+        else:
+            self.paths[start[0]] = {start[1]: (target[0], target[1], weight)}
+            self.add_path(target, start, weight)
 
     def get_paths(self) -> Dict[Tuple[int, int], Dict[Direction, Tuple[Tuple[int, int], Direction, Weight]]]:
         """
@@ -69,9 +81,17 @@ class Planet:
             }
         :return: Dict
         """
-
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+        return self.paths
+
+    #Method to find the MinDistance
+    def findMinimum(self, list: [], dict: {}):
+
+        myList = []
+        for l in list:
+            myList.append((l, dict[l]))
+        Min = min(myList, key=lambda t: t[1])
+        return Min[0]
 
     def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
         """
@@ -86,4 +106,118 @@ class Planet:
         """
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-        pass
+
+        #if the target Node is not in the Paths Dictionary
+        if target not in self.paths:
+            print("Target not reachable")
+            return None
+
+        #else if the target is reachable calculat Dijkstra and get the result path
+        return self.dijkstra(start, target)
+
+    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
+
+        #Initialization
+        Q = []
+        vertex = self.paths.keys()
+        dist = {}
+        prev = {}
+        shortest_path = []
+        shortest_path1 = []
+
+        #all Nodes will get the weight Infinity
+        for v in vertex:
+            dist[v] = math.inf
+            prev[v] = None
+            Q.append(v)
+
+        #Remove all blocked paths
+        for q in Q:
+            if dist[q] == -1:
+                Q.remove(q)
+
+        dist[start] = 0
+
+        while Q:
+            u = self.findMinimum(Q, dist)    #Node with minimum distance
+            Q.remove(u)
+
+            if u == target:
+                break
+            for p in self.paths[u].values():  #p = (Node, Dir, Weight)
+                alt = dist[u] + p[2]
+                if alt < dist[p[0]]:
+                    dist[p[0]] = alt
+
+                    Dir = Direction.NORTH
+                    for n in self.paths[u]:
+                        if self.paths[u][n] == p:
+                            Dir = n
+                    prev[p[0]] = (u, Dir)
+
+        uTraget = target
+        if prev[uTraget] or uTraget == start:
+            while prev[uTraget]:
+                shortest_path.append(prev[uTraget])
+                uTraget = prev[uTraget][0]
+
+        while shortest_path:  #to fix the order of the first list using lifo order
+            shortest_path1.append(shortest_path.pop())
+
+        return shortest_path1
+
+
+    def setPriorityList(self, direction: List[Direction]):
+        #not sure about this implementation
+        prioDir = []
+        for d in direction:
+            if d == Direction.NORTH:
+                prioDir.append((d, 4))
+            elif d == Direction.SOUTH:
+                prioDir.append((d, 1))
+            elif d == Direction.WEST:
+                prioDir.append((d, 2))
+            else:
+                prioDir.append((d, 3))
+
+        return prioDir
+
+    def get_real_directions(self, directions: List[int], current_dir: Direction):
+        real_dir = []
+        for d in directions:
+            real_dir.append(Direction((int(current_dir)+d) % 360))
+
+    def addExploredNode(self, node: Tuple[int, int], directions: List[Direction], current_dir):
+        direc = self.get_real_directions(directions, current_dir)
+        prioDir = self.setPriorityList(direc)
+        self.exploredNodes[node] = prioDir
+
+    def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
+        for a in self.exploredNodes[node]:
+            if a[0] == direction:
+                a[1] = priority
+
+    def chose_direction(self, node: Tuple[int, int]):
+        bestPriority = max(self.exploredNodes[node], key=lambda t: t[1])
+        return bestPriority[0]
+
+    def explor(self, node: Tuple[int, int], directions: List[int]):
+
+        myDirections = []
+        for d in directions:
+            myDirections.append(Direction(d))
+
+        self.addExploredNode(node, self.setPriorityList(myDirections))
+
+        return self.chose_direction(node)
+
+
+
+
+
+
+
+
+
+
+
