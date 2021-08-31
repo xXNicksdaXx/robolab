@@ -44,7 +44,7 @@ class Odometry:
         print(old_X)
         print(old_Y)
         print(old_Dir)
-        x = int(round(old_X / 50)) - 1  # yes, -1, it works, not answering further questions
+        x = int(round(old_X / 50))  # monument: -1, the best idea ever had
         y = int(round(old_Y / 50))
         dir = self.round_angle(old_Dir)
 
