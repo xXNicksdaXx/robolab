@@ -36,11 +36,11 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
-    # od = Odometry()
-    # mo = Movement()
-    # mo.follow_line()
-    robo = prototyp_actions_class()
-    robo.prototyp()
+    od = Odometry()
+    mo = Movement()
+    mo.follow_line()
+    # robo = prototyp_actions_class()
+    # robo.prototyp()
     print("-----------------------------------------------")
 
 

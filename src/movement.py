@@ -18,8 +18,7 @@ class Movement:
     kp = 0.6
     ki = 0.03
     kd = 0.46
-    offset = 120
-    targetPower = 185
+    targetPower = 190
     integral = 0
     lastError = 0
     derivative = 0
@@ -33,7 +32,8 @@ class Movement:
         self.odometry = Odometry()
         self.data = []
         self.black = 30
-        self.white = 230
+        self.white = 290
+        self.offset = 130
         self.color = 0
         self.asteroid = False
         self.config()
@@ -214,10 +214,7 @@ class Movement:
             if colorValue == -1 or colorValue == -2:
                 self.stop()
                 self.color = colorValue
-<<<<<<< HEAD
-                #self.node()
-=======
->>>>>>> 41da755f95152119a0e937f6d4bdb41464ce9005
+                self.to_node()
                 break
             else:
                 error = colorValue - self.offset
@@ -236,15 +233,8 @@ class Movement:
                 self.lastError = error
         print("drive stopped.")
 
-    # scans node for paths
-    def node(self):
-<<<<<<< HEAD
-        #res = self.odometry.calculate(self.data, 1, 0, 90)
-        #print(f"ODOMETRY: {res}")
-=======
-        res = self.odometry.calculate(self.data, 0, 0, 0)
-        print(f"ODOMETRY: {res}")
->>>>>>> 41da755f95152119a0e937f6d4bdb41464ce9005
+    # moves robot above node
+    def to_node(self):
         if self.color == -1:
             print("! FOUND RED NODE !")
         elif self.color == -2:
@@ -255,12 +245,15 @@ class Movement:
         while self.scan() == self.color:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
-        while i < 190:
+        while i < 185:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
         self.turn_45()
         time.sleep(1)
+
+    # scans node for paths
+    def node(self):
         k = self.count_path()
         self.stop()
         print(f"counted paths: {k}")
@@ -275,7 +268,7 @@ class Movement:
         while i < 4:
             j = 0
             found = False
-            while j < 180:
+            while j < 177:
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()
@@ -289,8 +282,8 @@ class Movement:
         return path
 
     # find next path
-    def next_path(self, d):
-        degree = d  # HERE: which path to choose, in degree!
+    def next_path(self, curDir, newDir):
+        degree = (curDir + newDir) % 360  # HERE: which path to choose, in degree!
         if degree == 90:
             self.turn_90()
         elif degree == 180:

@@ -30,6 +30,7 @@ class Planet:
     Contains the representation of the map and provides certain functions to manipulate or extend
     it according to the specifications
     """
+
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
@@ -51,7 +52,7 @@ class Planet:
         """
         # YOUR CODE FOLLOWS (remove pass, please!)
 
-       # if the Node is already discovered
+        # if the Node is already discovered
         if start[0] in self.paths:
             # if the Path exist in the Dictionary
             if start[1] in self.paths[start[0]]:
@@ -84,7 +85,7 @@ class Planet:
         # YOUR CODE FOLLOWS (remove pass, please!)
         return self.paths
 
-    #Method to find the MinDistance
+    # Method to find the MinDistance
     def findMinimum(self, list: [], dict: {}):
 
         myList = []
@@ -93,7 +94,8 @@ class Planet:
         Min = min(myList, key=lambda t: t[1])
         return Min[0]
 
-    def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
+    def shortest_path(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[
+        None, List[Tuple[Tuple[int, int], Direction]]]:
         """
         Returns a shortest path between two nodes
 
@@ -107,17 +109,18 @@ class Planet:
 
         # YOUR CODE FOLLOWS (remove pass, please!)
 
-        #if the target Node is not in the Paths Dictionary
+        # if the target Node is not in the Paths Dictionary
         if target not in self.paths:
             print("Target not reachable")
             return None
 
-        #else if the target is reachable calculat Dijkstra and get the result path
+        # else if the target is reachable calculat Dijkstra and get the result path
         return self.dijkstra(start, target)
 
-    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[None, List[Tuple[Tuple[int, int], Direction]]]:
+    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[
+        None, List[Tuple[Tuple[int, int], Direction]]]:
 
-        #Initialization
+        # Initialization
         Q = []
         vertex = self.paths.keys()
         dist = {}
@@ -125,13 +128,13 @@ class Planet:
         shortest_path = []
         shortest_path1 = []
 
-        #all Nodes will get the weight Infinity
+        # all Nodes will get the weight Infinity
         for v in vertex:
             dist[v] = math.inf
             prev[v] = None
             Q.append(v)
 
-        #Remove all blocked paths
+        # Remove all blocked paths
         for q in Q:
             if dist[q] == -1:
                 Q.remove(q)
@@ -139,12 +142,12 @@ class Planet:
         dist[start] = 0
 
         while Q:
-            u = self.findMinimum(Q, dist)    #Node with minimum distance
+            u = self.findMinimum(Q, dist)  # Node with minimum distance
             Q.remove(u)
 
             if u == target:
                 break
-            for p in self.paths[u].values():  #p = (Node, Dir, Weight)
+            for p in self.paths[u].values():  # p = (Node, Dir, Weight)
                 alt = dist[u] + p[2]
                 if alt < dist[p[0]]:
                     dist[p[0]] = alt
@@ -161,14 +164,13 @@ class Planet:
                 shortest_path.append(prev[uTraget])
                 uTraget = prev[uTraget][0]
 
-        while shortest_path:  #to fix the order of the first list using lifo order
+        while shortest_path:  # to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
 
         return shortest_path1
 
-
     def setPriorityList(self, direction: List[Direction]):
-        #not sure about this implementation
+        # not sure about this implementation
         prioDir = []
         for d in direction:
             if d == Direction.NORTH:
@@ -185,11 +187,11 @@ class Planet:
     def get_real_directions(self, directions: List[int], current_dir: Direction):
         real_dir = []
         for d in directions:
-            real_dir.append(Direction((int(current_dir)+d) % 360))
+            real_dir.append(Direction((int(current_dir) + d) % 360))
         return real_dir
 
     def addExploredNode(self, node: Tuple[int, int], directions: List[int], current_dir):
-        #dircetions = [0,90,180,270]
+        # dircetions = [0,90,180,270]
         real_dir = self.get_real_directions(directions, current_dir)
         prioDir = self.setPriorityList(real_dir)
         self.exploredNodes[node] = prioDir
@@ -213,14 +215,3 @@ class Planet:
         self.addExploredNode(node, self.setPriorityList(myDirections))
 
         return self.chose_direction(node)
-
-
-
-
-
-
-
-
-
-
-

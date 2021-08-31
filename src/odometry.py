@@ -30,12 +30,8 @@ class Odometry:
             else:
                 self.distance = ((r_distance + l_distance) / alpha) * math.sin(beta)
 
-<<<<<<< HEAD
             # maybe radian()
-            delta_X = -math.sin(math.radians(old_Dir) - beta) * self.distance
-=======
             delta_X = math.sin(math.radians(old_Dir) + beta) * self.distance
->>>>>>> 41da755f95152119a0e937f6d4bdb41464ce9005
             delta_Y = math.cos(math.radians(old_Dir) + beta) * self.distance
 
             new_Dir = math.radians(old_Dir) - alpha
@@ -46,15 +42,8 @@ class Odometry:
             old_Y = new_Y
             old_Dir = math.degrees(new_Dir)
 
-        print(old_X)
-        print(old_Y)
-        print(old_Dir)
-<<<<<<< HEAD
         print(self.distance)
-        x = int(round(old_X / 50))
-=======
         x = int(round(old_X / 50))  # monument: -1, the best idea ever had
->>>>>>> 41da755f95152119a0e937f6d4bdb41464ce9005
         y = int(round(old_Y / 50))
         dir = self.round_angle(old_Dir)
 
