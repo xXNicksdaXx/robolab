@@ -84,9 +84,16 @@ class Communication:
                 self.planetsub = "planet/" + info["planetName"] + "/125"
                 self.client.subscribe(self.planetsub)
             if payload["type"] == "path":
-                self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
-            if payload["type"] == "":
+                self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]),
+                                     ((payload["endX"], payload["endY"]), payload["endDirection"]),
+                                     payload["pathWeight"])
+            if payload["type"] == "pathSelect":
                 pass
+            if payload["type"] == "pathUnveiled":
+                self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
+            if payload["type"] == "target":
+                pass
+
             if payload['type'] in targets:
                 self.q.put(targets[payload['type']])
 
@@ -132,7 +139,7 @@ class Communication:
         :return: void
         """
         sdmessage = {"from": "client", "type": "ready"}
-        self.send_message("explorer/125", sdmessage)
+        self.send_message("explorer/125", json.dumps(sdmessage))
 
     def send_path(self, startX, startY, startD, endX, endY, endD, pathStatus):
         """
@@ -149,24 +156,9 @@ class Communication:
         sdmessage = {"from": "client", "type": "path",
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
                                 "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
-        self.send_message(self.planetsub, sdmessage)
+        self.send_message(self.planetsub, json.dumps(sdmessage))
 
-    def send_path_invalid(self, startX, startY, startD, endXc, endYc, endDc, pathStatus):
-        """
-               Send message of the type "path_invalid"
-               :param startX: integer
-               :param startY: integer
-               :param startD: integer
-               :param endXc: integer
-               :param endYc: integer
-               :param endDc: integer
-               :param pathStatus: String free|blocked
-               :return: void
-               """
-        sdmessage = {"from": "client", "type": "path",
-                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endXc": endXc,
-                                 "endYc": endYc, "endDirection": endDc, "pathStatus": pathStatus}}
-        self.send_message(self.planetsub, sdmessage)
+
 
     def send_pathSelect(self, startX, startY, startD):
         """
@@ -178,7 +170,7 @@ class Communication:
         """
         sdmessage = {"from": "client", "type": "pathSelect",
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD}}
-        self.send_message(self.planetsub, sdmessage)
+        self.send_message(self.planetsub, json.dumps(sdmessage))
 
     def send_complete(self, finished):
             """
@@ -190,4 +182,4 @@ class Communication:
                         "payload": {"message": "Explorer/125 erledigt die Aufgabe!"}}
             if finished:
                 sdmessage.update({"type": "explorationCompleted"})
-            self.send_message("explorer/125", sdmessage)
+            self.send_message("explorer/125", json.dumps(sdmessage))
