@@ -34,7 +34,7 @@ class Communication:
             raise
 
 
-    def __init__(self, mqtt_client, logger):
+    def __init__(self, mqtt_client, logger, planet):
         """
         Initializes communication module, connect to server, subscribe, etc.
         :param mqtt_client: paho.mqtt.client.Client
@@ -51,6 +51,7 @@ class Communication:
         self.client.subscribe('explorer/125', qos=1)  # Subscribe to topic explorer/xxx
 
         self.logger = logger
+        self.planet = planet
 
 
     # DO NOT EDIT THE METHOD SIGNATURE
@@ -82,7 +83,10 @@ class Communication:
             if payload["type"] == "planet":
                 self.planetsub = "planet/" + info["planetName"] + "/125"
                 self.client.subscribe(self.planetsub)
-
+            if payload["type"] == "path":
+                self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
+            if payload["type"] == "":
+                pass
             if payload['type'] in targets:
                 self.q.put(targets[payload['type']])
 
@@ -187,4 +191,3 @@ class Communication:
             if finished:
                 sdmessage.update({"type": "explorationCompleted"})
             self.send_message("explorer/125", sdmessage)
-
