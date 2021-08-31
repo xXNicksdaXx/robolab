@@ -19,21 +19,15 @@ class Odometry:
 
 
     def calculate(self, positions, old_X, old_Y, old_Dir):
-
-        print("----calculate coordinates----")
-        print("old Coordinates: " + str(old_X) + ", " + str(old_Y))
+        old_X *= 50
+        old_Y *= 50
 
         for p in positions:
-
-            print("position 0 left :>>>>>." + str(p[0]) + ">>>>>>")
-            print("position 1 right :>>>>>." + str(p[1]) + ">>>>>>")
-
             l_distance = p[0] * self.distance_per_tick
             r_distance = p[1] * self.distance_per_tick
 
             # calculate alpha & beta
             alpha = (r_distance - l_distance) / self.a
-            print("alpha :......" + str(alpha) + "........")
             beta = alpha / 2
 
             if alpha == 0:
@@ -42,10 +36,8 @@ class Odometry:
                 self.distance = ((r_distance + l_distance)/alpha) * math.sin(beta)
 
             # maybe radian()
-            delta_X = math.sin(math.radians(old_Dir) + beta) * self.distance
+            delta_X = -math.sin(math.radians(old_Dir) + beta) * self.distance
             delta_Y = math.cos(math.radians(old_Dir) + beta) * self.distance
-
-            print("deltaX, deltaY:....." + str(delta_X) + "," + str(delta_Y) + "..........")
 
             # maybe round()
             new_Dir = math.radians(old_Dir) - alpha
@@ -56,6 +48,26 @@ class Odometry:
             old_Y = new_Y
             old_Dir = math.degrees(new_Dir)
 
-        print("new Coordinates: " + str(old_X) + ", " + str(old_Y))
-        return ((old_X, old_Y), old_Dir)
+        print(old_X)
+        print(old_Y)
+        print(old_Dir)
+        x = int(round(old_X /50))
+        y = int(round(old_Y / 50))
+        dir = self.round_angle(old_Dir)
 
+        return ((x, y), dir)
+
+    # rounds angle
+    def round_angle(self, angle):
+        angle = int(round(angle+360)) % 360
+        print(angle)
+        if 70 < angle < 110:
+            return 90
+        elif 160 < angle < 200:
+            return 180
+        elif 250 < angle < 290:
+            return 270
+        elif 340 < angle < 360 or 0 <= angle < 20:
+            return 0
+        else:
+            return "no valid angle"

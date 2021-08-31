@@ -10,15 +10,15 @@ class Movement:
     rightMotor = ev3.LargeMotor("outC")
     colorSensor = ev3.ColorSensor("in1")
     button = ev3.TouchSensor("in2")
-    ultrasonicSensor = ev3.UltrasonicSensor("in3")
+    ultrasonicSensor = ev3.UltrasonicSensor("in4")
     led = ev3.Leds()
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.69
-    ki = 0.028
-    kd = 0.35
-    offset = 170
+    kp = 0.72
+    ki = 0.03
+    kd = 0.32
+    offset = 120
     targetPower = 200
     integral = 0
     lastError = 0
@@ -32,8 +32,10 @@ class Movement:
         self.ultrasonicSensor.mode = "US-SI-CM"
         self.odometry = Odometry()
         self.data = []
-        self.black = 50
-        self.white = 300
+        self.black = 30
+        self.white = 230
+        self.color = 0
+        self.asteroid = False
         self.config()
 
     # sets black & white color before start
@@ -196,6 +198,7 @@ class Movement:
             self.stop()
             print("! FOUND ASTEROID !")
             self.speaker.beep()
+            self.asteroid = True
             self.turn_180()
 
     # central movement function - works with pid
@@ -210,10 +213,8 @@ class Movement:
             colorValue = self.scan()
             if colorValue == -1 or colorValue == -2:
                 self.stop()
-                print(self.data)
-                l = self.odometry.calculate(self.data, 1, 0, 0)
-                print(f"RESULT: {l}")
-                self.node(colorValue)
+                self.color = colorValue
+                self.node()
                 break
             else:
                 error = colorValue - self.offset
@@ -232,16 +233,31 @@ class Movement:
                 self.lastError = error
         print("drive stopped.")
 
+    # get rotation
+    def test(self):
+        self.leftMotor.speed_sp = 40
+        self.rightMotor.speed_sp = 90
+        while self.button.value() == 0:
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+            leftPos = self.leftMotor.position
+            rightPos = self.rightMotor.position
+            self.data.append((leftPos, rightPos))
+        print(self.data)
+
+
     # scans node for paths
-    def node(self, color):
-        if color == -1:
+    def node(self):
+        res = self.odometry.calculate(self.data, 1, 0, 90)
+        print(f"ODOMETRY: {res}")
+        if self.color == -1:
             print("! FOUND RED NODE !")
-        elif color == -2:
+        elif self.color == -2:
             print("! FOUND BLUE NODE !")
         i = 0
         self.leftMotor.speed_sp = 80
         self.rightMotor.speed_sp = 80
-        while self.scan() == color:
+        while self.scan() == self.color:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
         while i < 190:
@@ -253,7 +269,7 @@ class Movement:
         k = self.count_path()
         self.stop()
         print(f"counted paths: {k}")
-        self.next_path(90)
+        return k
 
     # counts paths of a node
     def count_path(self):
