@@ -21,7 +21,7 @@ class prototyp_actions_class:
 
     def find_Node(self):
 
-
+        print("<<<<<<<<<find node>>>>>>>")
         a = self.odometry.calculate(self.data, self.current_coordinats[0], self.current_coordinats[1], self.current_direction)
         new_coordinates = a[0]
         new_direction = a[1]
@@ -31,11 +31,11 @@ class prototyp_actions_class:
             self.movement.bool = False
 
         else:
-            d = self.odometry.calculate_distance()
-            self.planet.add_path((self.current_coordinats, self.current_direction), (new_coordinates, new_direction),d)
+            d = self.odometry.distance
+            self.planet.add_path((self.current_coordinats, self.current_direction), (new_coordinates, new_direction), d)
 
             if new_coordinates not in self.planet.exploredNodes:
-                directions = self.movement.node()  #i need hier a list of all possible path at the current node
+                directions = self.movement.node()    #i need hier a list of all possible path at the current node
                 self.planet.addExploredNode(new_coordinates, directions, self.current_direction)
 
             self.current_coordinats = new_coordinates
@@ -61,24 +61,41 @@ class prototyp_actions_class:
 
 
     def finished(self):
-        pass
+        for e in self.planet.exploredNodes.values():
+            for d in e:
+                if d[1] > 0:
+                    return False
+        return True
 
-    def update_Dir(self, new_direction):
+    def update_dir(self, new_direction):
         self.current_direction = new_direction
 
         self.planet.update_path_Priority(self.current_coordinats, self.current_direction, 0)
 
+    def go_to_target(self, start, target):
+        myList = self.planet.shortest_path(start, target)
+        for l in myList:
+            self.movement.next_path(l[1])
+            #follow_line to the next node
+
+
 
     def prototyp(self):
 
+        #<<<<communication>>>>>
+
         #while not finished:
         while True:
+
             self.movement.follow_line()     # self.data = self.movement.follow_line()
 
+            #traget Messege -> shortest path
 
+
+            
             self.find_Node()
             new_Dir = self.find_Node()
-            #<<<<<communication >>>>
+            #<<<<< communication >>>>
             self.update_dir(new_Dir)
 
             d = (self.current_direction + new_Dir) % 360

@@ -188,8 +188,9 @@ class Planet:
             real_dir.append(Direction((int(current_dir)+d) % 360))
 
     def addExploredNode(self, node: Tuple[int, int], directions: List[Direction], current_dir):
-        direc = self.get_real_directions(directions, current_dir)
-        prioDir = self.setPriorityList(direc)
+        #dircetions = [0,90,180,270]
+        real_dir = self.get_real_directions(directions, current_dir)
+        prioDir = self.setPriorityList(real_dir)
         self.exploredNodes[node] = prioDir
 
     def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
