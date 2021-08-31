@@ -36,7 +36,7 @@ class Odometry:
                 self.distance = ((r_distance + l_distance)/alpha) * math.sin(beta)
 
             # maybe radian()
-            delta_X = -math.sin(math.radians(old_Dir) + beta) * self.distance
+            delta_X = -math.sin(math.radians(old_Dir) - beta) * self.distance
             delta_Y = math.cos(math.radians(old_Dir) + beta) * self.distance
 
             # maybe round()
@@ -51,7 +51,8 @@ class Odometry:
         print(old_X)
         print(old_Y)
         print(old_Dir)
-        x = int(round(old_X /50))
+        print(self.distance)
+        x = int(round(old_X / 50))
         y = int(round(old_Y / 50))
         dir = self.round_angle(old_Dir)
 

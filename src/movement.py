@@ -214,7 +214,7 @@ class Movement:
             if colorValue == -1 or colorValue == -2:
                 self.stop()
                 self.color = colorValue
-                self.node()
+                #self.node()
                 break
             else:
                 error = colorValue - self.offset
@@ -248,8 +248,8 @@ class Movement:
 
     # scans node for paths
     def node(self):
-        res = self.odometry.calculate(self.data, 1, 0, 90)
-        print(f"ODOMETRY: {res}")
+        #res = self.odometry.calculate(self.data, 1, 0, 90)
+        #print(f"ODOMETRY: {res}")
         if self.color == -1:
             print("! FOUND RED NODE !")
         elif self.color == -2:
