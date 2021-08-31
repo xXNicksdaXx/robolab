@@ -15,11 +15,11 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.72
+    kp = 0.6
     ki = 0.03
-    kd = 0.32
+    kd = 0.46
     offset = 120
-    targetPower = 200
+    targetPower = 185
     integral = 0
     lastError = 0
     derivative = 0
@@ -73,7 +73,7 @@ class Movement:
 
         if rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
             return -1
-        elif rgb_tuple[2] > rgb_tuple[0] + rgb_tuple[1]:
+        elif rgb_tuple[2] > 1.25 * (rgb_tuple[0] + rgb_tuple[1]):
             return -2
         else:
             return rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2]
@@ -114,7 +114,7 @@ class Movement:
             return "white"
         elif rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] < 70:
             return "black"
-        elif rgb_tuple[2] > rgb_tuple[0] + rgb_tuple[1]:
+        elif rgb_tuple[2] > 1.25 * (rgb_tuple[0] + rgb_tuple[1]):
             return "blue"
         elif rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
             return "red"
@@ -233,22 +233,9 @@ class Movement:
                 self.lastError = error
         print("drive stopped.")
 
-    # get rotation
-    def test(self):
-        self.leftMotor.speed_sp = 40
-        self.rightMotor.speed_sp = 90
-        while self.button.value() == 0:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            leftPos = self.leftMotor.position
-            rightPos = self.rightMotor.position
-            self.data.append((leftPos, rightPos))
-        print(self.data)
-
-
     # scans node for paths
     def node(self):
-        res = self.odometry.calculate(self.data, 1, 0, 90)
+        res = self.odometry.calculate(self.data, 1, 0, 0)
         print(f"ODOMETRY: {res}")
         if self.color == -1:
             print("! FOUND RED NODE !")
