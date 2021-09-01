@@ -15,10 +15,10 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.6
-    ki = 0.03
-    kd = 0.46
-    targetPower = 190
+    kp = 0.58
+    ki = 0.015
+    kd = 0.8
+    targetPower = 195
     integral = 0
     lastError = 0
     derivative = 0
@@ -150,9 +150,9 @@ class Movement:
     # 90 degree turnaround
     def turn_90(self):
         i = 0
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
-        while i < 620:
+        self.leftMotor.speed_sp = 95
+        self.rightMotor.speed_sp = -100
+        while i < 350:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -161,9 +161,9 @@ class Movement:
     # 180 degree turnaround
     def turn_180(self):
         i = 0
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
-        while i < 1200:
+        self.leftMotor.speed_sp = 95
+        self.rightMotor.speed_sp = -100
+        while i < 700:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -172,8 +172,8 @@ class Movement:
     # 270 degree turnaround
     def turn_270(self):
         i = 0
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
+        self.leftMotor.speed_sp = 95
+        self.rightMotor.speed_sp = -100
         while i < 1890:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
@@ -183,8 +183,8 @@ class Movement:
     # 360 degree turnaround
     def turn_360(self):
         i = 0
-        self.leftMotor.speed_sp = 90
-        self.rightMotor.speed_sp = -90
+        self.leftMotor.speed_sp = 95
+        self.rightMotor.speed_sp = -100
         while i < 2530:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
@@ -194,12 +194,13 @@ class Movement:
     # measure distance
     def distance(self):
         d = self.ultrasonicSensor.distance_centimeters
-        if d < 10:
+        if d < 8:
             self.stop()
             print("! FOUND ASTEROID !")
             self.speaker.beep()
+            time.sleep(1)
             self.asteroid = True
-            self.turn_180()
+            self.next_path(0, 90)
 
     # central movement function - works with pid
     def follow_line(self):
@@ -245,7 +246,7 @@ class Movement:
         while self.scan() == self.color:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
-        while i < 185:
+        while i < 195:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -290,9 +291,9 @@ class Movement:
             self.turn_180()
         elif degree == 270:
             self.turn_270()
-
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
+        else:
+            self.leftMotor.speed_sp = 95
+            self.rightMotor.speed_sp = -100
         while self.scan_absolute() != "black":
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
