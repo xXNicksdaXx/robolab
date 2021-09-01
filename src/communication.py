@@ -81,21 +81,27 @@ class Communication:
                 "target": (info["targetX"], info["targetY"]),
                 "done": info["message"]
             }
+
             if payload["type"] == "planet":
                 self.planetsub = "planet/" + info["planetName"] + "/125"
                 self.client.subscribe(self.planetsub)
+                # need to be implemented
+                self.planet.getPramater((info["startX"], info["startY"]), info["startOrientation"])
+
             if payload["type"] == "path":
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]),
                                      ((payload["endX"], payload["endY"]), payload["endDirection"]),
                                      payload["pathWeight"])
             if payload["type"] == "pathSelect":
-                pass
+                # need to be implemented
+                self.planet.get_new_direction(info["startDirection"])
             if payload["type"] == "pathUnveiled":
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
             if payload["type"] == "target":
-                pass
-            if payload["type"] == "done":
-                pass
+                # need to be implemented
+                self.planet.set_target((info["targetX"], info["targetY"]))
+            # if payload["type"] == "done":
+            #     pass
             if payload['type'] in targets:
                 self.q.put(targets[payload['type']])
 
