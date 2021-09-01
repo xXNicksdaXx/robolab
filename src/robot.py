@@ -6,7 +6,7 @@ from movement import Movement
 
 # from src.movement import Movement
 
-class prototyp_actions_class:
+class Robot:
 
     def __init__(self):
         self.planet = Planet()

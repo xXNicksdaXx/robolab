@@ -202,6 +202,28 @@ class Movement:
             self.asteroid = True
             self.next_path(0, 90)
 
+    # counts paths of a node
+    def count_path(self):
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
+        path = []
+        i = 0
+        while i < 4:
+            j = 0
+            found = False
+            while j < 177:
+                self.leftMotor.command = "run-forever"
+                self.rightMotor.command = "run-forever"
+                new_scan = self.scan_absolute()
+                if new_scan == "black":
+                    found = True
+                j += 1
+            if found:
+                path.append(i * 90)
+            i += 1
+        self.stop()
+        return path
+
     # central movement function - works with pid
     def follow_line(self):
         prevLeft = 0
@@ -259,28 +281,6 @@ class Movement:
         self.stop()
         print(f"counted paths: {k}")
         return k
-
-    # counts paths of a node
-    def count_path(self):
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
-        path = []
-        i = 0
-        while i < 4:
-            j = 0
-            found = False
-            while j < 177:
-                self.leftMotor.command = "run-forever"
-                self.rightMotor.command = "run-forever"
-                new_scan = self.scan_absolute()
-                if new_scan == "black":
-                    found = True
-                j += 1
-            if found:
-                path.append(i * 90)
-            i += 1
-        self.stop()
-        return path
 
     # find next path
     def next_path(self, curDir, newDir):

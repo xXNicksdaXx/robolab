@@ -6,9 +6,7 @@ import os
 import paho.mqtt.client as mqtt
 import uuid
 import signal
-from odometry import Odometry
-from movement import Movement
-from prototyp_action_class import prototyp_actions_class
+from robot import Robot
 
 client = None  # DO NOT EDIT
 
@@ -36,11 +34,8 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
-    od = Odometry()
-    mo = Movement()
-    mo.follow_line()
-    # robo = prototyp_actions_class()
-    # robo.prototyp()
+    robot = Robot()
+    robot.prototyp()
     print("-----------------------------------------------")
 
 
