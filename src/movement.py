@@ -15,9 +15,9 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.56
+    kp = 0.67
     ki = 0.017
-    kd = 0.48
+    kd = 0.46
     targetPower = 180
     integral = 0
     lastError = 0
@@ -41,27 +41,27 @@ class Movement:
     # sets black & white color before start
     def config(self):
         print("--> CONFIG")
-        print("1. black")
-        print("2. white")
+        print("1. white")
+        print("2. black")
         set_black = False
         set_white = False
 
-        while not set_black:
-            if self.button.value() == 1:
-                self.black = self.scan()
-                print(f"** set black: {self.black}")
-                set_black = True
-        time.sleep(1)
         while not set_white:
             if self.button.value() == 1:
                 self.white = self.scan()
                 print(f"** set white: {self.white}")
                 set_white = True
+        time.sleep(1)
+        while not set_black:
+            if self.button.value() == 1:
+                self.black = self.scan()
+                print(f"** set black: {self.black}")
+                set_black = True
         self.offset = (self.white + self.black) * 0.5
         print(f"** set offset: {self.offset}")
         print("Config done.")
         print("")
-        time.sleep(3)
+        time.sleep(2)
 
     # scans important parameter
     def scan(self):
@@ -161,7 +161,7 @@ class Movement:
         i = 0
         self.leftMotor.speed_sp = 95
         self.rightMotor.speed_sp = -100
-        while i < 700:
+        while i < 690:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -172,7 +172,7 @@ class Movement:
         i = 0
         self.leftMotor.speed_sp = 95
         self.rightMotor.speed_sp = -100
-        while i < 1890:
+        while i < 1040:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -211,7 +211,7 @@ class Movement:
                 self.color = colorValue
                 self.to_node()
                 self.node()
-                self.next_path(0, 90)
+                self.next_path(0, 270)
                 self.follow_line()
                 break
             else:
@@ -229,7 +229,6 @@ class Movement:
                 self.move_left_motor(powerLeft)
                 self.move_right_motor(powerRight)
                 self.lastError = error
-        print("drive stopped.")
 
     # moves robot above node
     def to_node(self):
@@ -241,7 +240,7 @@ class Movement:
         i = 0
         self.leftMotor.speed_sp = 60
         self.rightMotor.speed_sp = 60
-        while i < 390:
+        while i < 450:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -257,14 +256,14 @@ class Movement:
     # counts paths of a node
     def count_path(self):
         time.sleep(1)
-        self.leftMotor.speed_sp = 95
-        self.rightMotor.speed_sp = -100
+        self.leftMotor.speed_sp = 75
+        self.rightMotor.speed_sp = -80
         path = []
         i = 0
         while i < 4:
             j = 0
             found = False
-            while j < 117:
+            while j < 160:
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()
