@@ -15,10 +15,10 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.58
-    ki = 0.015
-    kd = 0.8
-    targetPower = 195
+    kp = 0.56
+    ki = 0.017
+    kd = 0.48
+    targetPower = 180
     integral = 0
     lastError = 0
     derivative = 0
@@ -40,8 +40,6 @@ class Movement:
 
     # sets black & white color before start
     def config(self):
-        # self.led.set_color('LEFT', 'AMBER')
-        # self.led.set_color('RIGHT', 'AMBER')
         print("--> CONFIG")
         print("1. black")
         print("2. white")
@@ -114,7 +112,7 @@ class Movement:
             return "white"
         elif rgb_tuple[0] + rgb_tuple[1] + rgb_tuple[2] < 70:
             return "black"
-        elif rgb_tuple[2] > 1.25 * (rgb_tuple[0] + rgb_tuple[1]):
+        elif rgb_tuple[2] > 1.28 * (rgb_tuple[0] + rgb_tuple[1]):
             return "blue"
         elif rgb_tuple[0] > 2 * (rgb_tuple[1] + rgb_tuple[2]):
             return "red"
@@ -122,12 +120,12 @@ class Movement:
             return "other"
 
     # left motor movement
-    def moveA(self, pl):
+    def move_left_motor(self, pl):
         self.leftMotor.speed_sp = pl
         self.leftMotor.command = "run-forever"
 
     # right motor movement
-    def moveC(self, pr):
+    def move_right_motor(self, pr):
         self.rightMotor.speed_sp = pr
         self.rightMotor.command = "run-forever"
 
@@ -141,7 +139,7 @@ class Movement:
         i = 0
         self.leftMotor.speed_sp = -70
         self.rightMotor.speed_sp = 65
-        while i < 311:
+        while i < 240:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -152,7 +150,7 @@ class Movement:
         i = 0
         self.leftMotor.speed_sp = 95
         self.rightMotor.speed_sp = -100
-        while i < 350:
+        while i < 340:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
@@ -180,17 +178,6 @@ class Movement:
             i += 1
         self.stop()
 
-    # 360 degree turnaround
-    def turn_360(self):
-        i = 0
-        self.leftMotor.speed_sp = 95
-        self.rightMotor.speed_sp = -100
-        while i < 2530:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            i += 1
-        self.stop()
-
     # measure distance
     def distance(self):
         d = self.ultrasonicSensor.distance_centimeters
@@ -202,12 +189,19 @@ class Movement:
             self.asteroid = True
             self.next_path(0, 90)
 
+    # resets some values
+    def reset_value(self):
+        self.lastError = 0
+        self.derivative = 0
+        self.integral = 0
+        self.data = []
+
     # central movement function - works with pid
     def follow_line(self):
         prevLeft = 0
         prevRight = 0
         time.sleep(2)
-        self.data = []  # clearing odometry
+        self.reset_value()
         print("note: end drive by pressing button")
         while self.button.value() == 0:  # condition for scan done
             self.distance()
@@ -216,6 +210,9 @@ class Movement:
                 self.stop()
                 self.color = colorValue
                 self.to_node()
+                self.node()
+                self.next_path(0, 90)
+                self.follow_line()
                 break
             else:
                 error = colorValue - self.offset
@@ -229,29 +226,26 @@ class Movement:
                 self.data.append((newLeft - prevLeft, newRight - prevRight))
                 prevLeft = newLeft
                 prevRight = newRight
-                self.moveA(powerLeft)
-                self.moveC(powerRight)
+                self.move_left_motor(powerLeft)
+                self.move_right_motor(powerRight)
                 self.lastError = error
         print("drive stopped.")
 
     # moves robot above node
     def to_node(self):
+        time.sleep(1)
         if self.color == -1:
             print("! FOUND RED NODE !")
         elif self.color == -2:
             print("! FOUND BLUE NODE !")
         i = 0
-        self.leftMotor.speed_sp = 80
-        self.rightMotor.speed_sp = 80
-        while self.scan() == self.color:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-        while i < 195:
+        self.leftMotor.speed_sp = 60
+        self.rightMotor.speed_sp = 60
+        while i < 390:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
             i += 1
         self.turn_45()
-        time.sleep(1)
 
     # scans node for paths
     def node(self):
@@ -262,14 +256,15 @@ class Movement:
 
     # counts paths of a node
     def count_path(self):
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
+        time.sleep(1)
+        self.leftMotor.speed_sp = 95
+        self.rightMotor.speed_sp = -100
         path = []
         i = 0
         while i < 4:
             j = 0
             found = False
-            while j < 177:
+            while j < 117:
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()

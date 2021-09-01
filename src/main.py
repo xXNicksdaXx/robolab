@@ -2,13 +2,13 @@
 
 import logging
 import os
+import time
 
 import paho.mqtt.client as mqtt
 import uuid
 import signal
 from odometry import Odometry
 from movement import Movement
-from prototyp_action_class import prototyp_actions_class
 
 client = None  # DO NOT EDIT
 
@@ -39,8 +39,6 @@ def run():
     od = Odometry()
     mo = Movement()
     mo.follow_line()
-    # robo = prototyp_actions_class()
-    # robo.prototyp()
     print("-----------------------------------------------")
 
 
