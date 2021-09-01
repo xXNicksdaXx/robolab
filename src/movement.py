@@ -15,7 +15,7 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.67
+    kp = 0.69
     ki = 0.017
     kd = 0.46
     targetPower = 180
@@ -237,9 +237,13 @@ class Movement:
             print("! FOUND RED NODE !")
         elif self.color == -2:
             print("! FOUND BLUE NODE !")
-        i = 0
+        # self.leftMotor.time_sp = 1000
+        # self.rightMotor.time_sp = 1000
         self.leftMotor.speed_sp = 60
         self.rightMotor.speed_sp = 60
+        # self.leftMotor.command = "run-timed"
+        # self.rightMotor.command = "run-timed"
+        i = 0
         while i < 450:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
