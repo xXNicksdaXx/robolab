@@ -25,6 +25,9 @@ class Robot:
         new_coordinates = a[0]
         new_direction = Direction(a[1])
         print(f"a :     {a}")
+        if self.movement.asteroid:
+            new_coordinates = self.planet.current_coordinates
+            new_direction = self.planet.current_direction
 
         # beginn the exploration in class planet
         E = self.planet.explor(new_coordinates, new_direction, self.movement.asteroid)
@@ -54,7 +57,7 @@ class Robot:
     # maybe needed
     def update_dir(self, new_direction):
         current_direction = new_direction
-        self.planet.update_path_Priority(self.planet.current_coordinats, current_direction, 0)
+        self.planet.update_path_Priority(self.planet.current_coordinates, current_direction, 0)
 
     def go_to_target(self, start, target):
         myList = self.planet.shortest_path(start, target)

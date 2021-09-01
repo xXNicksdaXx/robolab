@@ -31,7 +31,7 @@ class Planet:
     Contains the representation of the map and provides certain functions to manipulate or extend
     it according to the specifications
     """
-    current_coordinates = (0, 0)
+
 
     def __init__(self):
         """ Initializes the data structure """
@@ -40,7 +40,7 @@ class Planet:
         self.paths = {}
         self.exploredNodes = {}
 
-        #self.current_coordinates = (0, 0)
+        self.current_coordinates = (0, 0)
         self.current_direction = Direction.NORTH
         # self.current_coordinates = None
         # self.current_direction = None
@@ -249,7 +249,7 @@ class Planet:
 
     def explor(self, new_coordinates, new_direction, find_obstacle):
         print(f"coordinales1 : {new_coordinates}")
-        self.current_coordinats = new_coordinates
+        self.current_coordinates = new_coordinates
         self.current_direction = new_direction
 
         print(f"coordinales2 : {self.current_coordinates}")
