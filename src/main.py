@@ -2,11 +2,13 @@
 
 import logging
 import os
+import time
 
 import paho.mqtt.client as mqtt
 import uuid
 import signal
-from robot import Robot
+from odometry import Odometry
+from movement import Movement
 
 client = None  # DO NOT EDIT
 
@@ -34,8 +36,9 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
-    robot = Robot()
-    robot.prototyp()
+    od = Odometry()
+    mo = Movement()
+    mo.follow_line()
     print("-----------------------------------------------")
 
 
