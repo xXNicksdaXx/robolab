@@ -86,7 +86,7 @@ class Communication:
                 self.planetsub = "planet/" + info["planetName"] + "/125"
                 self.client.subscribe(self.planetsub)
                 # need to be implemented
-                self.planet.getPramater((info["startX"], info["startY"]), info["startOrientation"])
+                self.planet.set_parameter((info["startX"], info["startY"]), info["startOrientation"])
 
             if payload["type"] == "path":
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]),
@@ -94,7 +94,7 @@ class Communication:
                                      payload["pathWeight"])
             if payload["type"] == "pathSelect":
                 # need to be implemented
-                self.planet.get_new_direction(info["startDirection"])
+                self.planet.set_new_direction(info["startDirection"])
             if payload["type"] == "pathUnveiled":
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
             if payload["type"] == "target":

@@ -9,6 +9,7 @@ import uuid
 import signal
 from odometry import Odometry
 from movement import Movement
+from robot import Robot
 
 client = None  # DO NOT EDIT
 
@@ -36,9 +37,8 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
-    od = Odometry()
-    mo = Movement()
-    mo.follow_line()
+    ro = Robot()
+    ro.prototyp()
     print("-----------------------------------------------")
 
 

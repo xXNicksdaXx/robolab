@@ -4,6 +4,7 @@
 from enum import IntEnum, unique
 from typing import List, Tuple, Dict, Union
 import math
+from communication import Communication
 
 
 @unique
@@ -30,6 +31,7 @@ class Planet:
     Contains the representation of the map and provides certain functions to manipulate or extend
     it according to the specifications
     """
+    current_coordinates = (0, 0)
 
     def __init__(self):
         """ Initializes the data structure """
@@ -37,6 +39,28 @@ class Planet:
 
         self.paths = {}
         self.exploredNodes = {}
+
+        #self.current_coordinates = (0, 0)
+        self.current_direction = Direction.NORTH
+        # self.current_coordinates = None
+        # self.current_direction = None
+        self.new_direction = None
+
+        #self.communication = communication
+
+
+    # some methods wich are related to communication
+    def set_parameter(self, startX, startY, startDir):
+        self.current_coordinates = (startX, startY)
+        self.current_direction = startDir
+    def set_new_direction(self, new_direction):
+        self.new_direction = new_direction
+    def set_traget(self, targetX, targetY):
+        self.target = (targetX, targetY)
+
+    def get_end_dir(self, dir):
+        return Direction((int(dir) + 180 )%360)
+
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):
@@ -169,6 +193,16 @@ class Planet:
 
         return shortest_path1
 
+# --------------------for the intelligent Exploration:---------------------------
+
+#for add new explored node:
+    # transforming the directions from int to Direction
+    def get_real_directions(self, directions: List[int], current_dir):
+        real_dir = []
+        for d in directions:
+            real_dir.append(Direction((int(current_dir) + d) % 360))
+        return real_dir
+
     # set for every direction Priority
     def setPriorityList(self, direction: List[Direction]):
         # not sure about this implementation
@@ -185,18 +219,13 @@ class Planet:
 
         return prioDir
 
-    # transforming the directions from int to Direction
-    def get_real_directions(self, directions: List[int], current_dir: Direction):
-        real_dir = []
-        for d in directions:
-            real_dir.append(Direction((int(current_dir) + d) % 360))
-        return real_dir
-
     def addExploredNode(self, node: Tuple[int, int], directions: List[int], current_dir):
         # dircetions = [0,90,180,270]
         real_dir = self.get_real_directions(directions, current_dir)
         prioDir = self.setPriorityList(real_dir)
         self.exploredNodes[node] = prioDir
+
+# ------------for the main exploration ---------------
 
     def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
         for a in self.exploredNodes[node]:
@@ -204,16 +233,53 @@ class Planet:
                 self.exploredNodes[node].remove(a)
                 self.exploredNodes[node].append((direction, priority))
 
-    def chose_direction(self, node: Tuple[int, int]):
+    # chosing the direction with the hieghest priority
+    def chose_direction(self, node):
         bestPriority = max(self.exploredNodes[node], key=lambda t: t[1])
         return bestPriority[0]
 
-    def explor(self, node: Tuple[int, int], directions: List[int]):
+    def found_obstacle(self):
+        self.update_path_Priority(self.current_coordinates, self.current_direction, -1)
+        # communication path messege (current_coordinates, current_direction, current_coordinates, current_direction, blocked)
+        # self.communication.send_path(self.current_coordinats[0], self.current_coordinats[1], self.current_direction,
+        #                              self.current_coordinats[0], self.current_coordinats[1], self.current_direction, "blocked")
+        # # after return 360 degree change the current dircetion
+        self.current_direction = Direction((int(self.current_direction) + 180) % 360)
 
-        myDirections = []
-        for d in directions:
-            myDirections.append(Direction(d))
 
-        self.addExploredNode(node, self.setPriorityList(myDirections))
+    def explor(self, new_coordinates, new_direction, find_obstacle):
+        print(f"coordinales1 : {new_coordinates}")
+        self.current_coordinats = new_coordinates
+        self.current_direction = new_direction
 
-        return self.chose_direction(node)
+        print(f"coordinales2 : {self.current_coordinates}")
+
+        print(self.exploredNodes)
+        if find_obstacle:
+            self.found_obstacle()
+            return "found obstacle"
+
+        elif new_coordinates not in self.exploredNodes:
+            print(self.exploredNodes)
+            return "node not explored yet!"
+
+        # if the node is explored change the priority of the path
+        self.update_path_Priority(new_coordinates, self.get_end_dir(new_direction), 0)
+
+
+
+    def new_explored_node(self, new_coordinates, directions, new_direction):
+        self.addExploredNode(new_coordinates, directions, new_direction)
+        # communication path messege (current_coordinates, current_direction, new_coordinates, new_direction, free)
+        # self.communication.send_path(self.current_coordinats[0], self.current_coordinats[1], self.current_direction,
+        #                              new_coordinats[0], new_coordinats[1], new_direction, "free")
+
+        # self.current_coordinats = new_coordinates
+        # self.current_direction = new_direction
+        # self.update_path_Priority(self.current_coordinats, self.get_end_dir(self.current_direction), 0)
+
+    def get_next_direction(self, current_coordinates):
+        self.new_direction = self.chose_direction(current_coordinates)
+        # commmunication.send_pathSelect(current_coordinates[0], current_coordinates[1], direction)
+        return self.new_direction
+
