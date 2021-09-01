@@ -42,7 +42,7 @@ class Odometry:
             old_Y = new_Y
             old_Dir = math.degrees(new_Dir)
 
-        print(self.distance)
+        #print(self.distance)
         x = int(round(old_X / 50))  # monument: -1, the best idea ever had
         y = int(round(old_Y / 50))
         dir = self.round_angle(old_Dir)
