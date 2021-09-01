@@ -78,7 +78,8 @@ class Communication:
                     ((info["endX"], info["endY"]), info["endDirection"]),
                     info["pathWeight"]
                 ),
-                "target": (info["targetX"], info["targetY"])
+                "target": (info["targetX"], info["targetY"]),
+                "done": info["message"]
             }
             if payload["type"] == "planet":
                 self.planetsub = "planet/" + info["planetName"] + "/125"
@@ -93,7 +94,8 @@ class Communication:
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
             if payload["type"] == "target":
                 pass
-
+            if payload["type"] == "done":
+                pass
             if payload['type'] in targets:
                 self.q.put(targets[payload['type']])
 
