@@ -210,9 +210,6 @@ class Movement:
                 self.stop()
                 self.color = colorValue
                 self.to_node()
-                self.node()
-                self.next_path(0, 270)
-                self.follow_line()
                 break
             else:
                 error = colorValue - self.offset
