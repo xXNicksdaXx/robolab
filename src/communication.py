@@ -45,7 +45,6 @@ class Communication:
         self.client.tls_set(tls_version=ssl.PROTOCOL_TLS)
         self.client.on_message = self.safe_on_message_handler
         # Add your client setup here
-        self.client = mqtt.Client(client_id="MQTT_FX_Client", clean_session=False, protocol=mqtt.MQTTv31)
         self.client.username_pw_set('125', password='IWDwkt9Ao3')  # Your group credentials
         self.client.connect('mothership.inf.tu-dresden.de', port=8883)
         self.client.subscribe('explorer/125', qos=1)  # Subscribe to topic explorer/xxx
@@ -64,31 +63,35 @@ class Communication:
         :return: void
         """
         payload = json.loads(message.payload.decode('utf-8'))  # str -> dict
+
         self.logger.debug(json.dumps(payload, indent=2))
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-        info = payload["payload"]
         if payload["from"] == "server":
-            targets = {
-                "planet": ((info["startX"], info["startY"]), info["startOrientation"]),
-                "path": (((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"]),
-                "pathSelect": info["startDirection"],
-                "pathUnveiled": (
-                    ((info["startX"], info["startY"]), info["startDirection"]),
-                    ((info["endX"], info["endY"]), info["endDirection"]),
-                    info["pathWeight"]
-                ),
-                "target": (info["targetX"], info["targetY"]),
-                "done": info["message"]
-            }
+            # targets = {
+            #     "planet": ((info["startX"], info["startY"]), info["startOrientation"]),
+            #     "path": (((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"]),
+            #     "pathSelect": info["startDirection"],
+            #     "pathUnveiled": (
+            #         ((info["startX"], info["startY"]), info["startDirection"]),
+            #         ((info["endX"], info["endY"]), info["endDirection"]),
+            #         info["pathWeight"]
+            #     ),
+            #     "target": (info["targetX"], info["targetY"]),
+            #     "done": info["message"]
+            # }
 
             if payload["type"] == "planet":
+                info = payload["payload"]
+
                 self.planetsub = "planet/" + info["planetName"] + "/125"
                 self.client.subscribe(self.planetsub)
-                # need to be implemented
-                self.planet.set_parameter((info["startX"], info["startY"]), info["startOrientation"])
+                print("hello communication")
+                self.planet.set_parameter(info["startX"], info["startY"], info["startOrientation"])
 
             if payload["type"] == "path":
+                info = payload["payload"]
+
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]),
                                      ((payload["endX"], payload["endY"]), payload["endDirection"]),
                                      payload["pathWeight"])
@@ -99,11 +102,9 @@ class Communication:
                 self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
             if payload["type"] == "target":
                 # need to be implemented
-                self.planet.set_target((info["targetX"], info["targetY"]))
+                self.planet.set_target(payload["targetX"], payload["targetY"])
             # if payload["type"] == "done":
             #     pass
-            if payload['type'] in targets:
-                self.q.put(targets[payload['type']])
 
     # DO NOT EDIT THE METHOD SIGNATURE
     #
@@ -116,11 +117,14 @@ class Communication:
         :param message: Object
         :return: void
         """
+        print("send messagge")
+        print(topic, message)
         self.logger.debug('Send to: ' + topic)
         self.logger.debug(json.dumps(message, indent=2))
 
         # YOUR CODE FOLLOWS (remove pass, please!)
         self.client.publish(topic, json.dumps(message), qos=1)
+
 
     # DO NOT EDIT THE METHOD SIGNATURE OR BODY
     #
@@ -147,7 +151,8 @@ class Communication:
         :return: void
         """
         sdmessage = {"from": "client", "type": "ready"}
-        self.send_message("explorer/125", json.dumps(sdmessage))
+        print(sdmessage)
+        self.send_message("explorer/125", sdmessage)
 
     def send_path(self, startX, startY, startD, endX, endY, endD, pathStatus):
         """
