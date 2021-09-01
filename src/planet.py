@@ -169,6 +169,7 @@ class Planet:
 
         return shortest_path1
 
+    # set for every direction Priority
     def setPriorityList(self, direction: List[Direction]):
         # not sure about this implementation
         prioDir = []
@@ -184,6 +185,7 @@ class Planet:
 
         return prioDir
 
+    # transforming the directions from int to Direction
     def get_real_directions(self, directions: List[int], current_dir: Direction):
         real_dir = []
         for d in directions:

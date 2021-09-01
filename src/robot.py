@@ -25,9 +25,9 @@ class Robot:
 
         print("<<<<<<<<<find node>>>>>>>")
         a = self.odometry.calculate(self.data, self.current_coordinats[0], self.current_coordinats[1],
-                                    self.current_direction)
+                                    int(self.current_direction))
         new_coordinates = a[0]
-        new_direction = a[1]
+        new_direction = Direction(a[1])
 
         # if self.movement.bool:
         #     self.find_obstacle()
@@ -40,18 +40,22 @@ class Robot:
 
         self.planet.add_path((self.current_coordinats, self.current_direction), (new_coordinates, new_direction), d)
 
+        print(f"exploredNodes1 : {self.planet.exploredNodes.keys()}")
+
         if new_coordinates not in self.planet.exploredNodes.keys():
             directions = self.movement.node()  # i need hier a list of all possible path at the current node
-            print(directions)
             self.planet.addExploredNode(new_coordinates, directions, self.current_direction)
+            print(f"exploredNodes2 : {self.planet.exploredNodes}")
 
         self.current_coordinats = new_coordinates
         self.current_direction = new_direction
 
         self.planet.update_path_Priority(self.current_coordinats, self.current_direction, 0)
 
-        new_direction = self.planet.chose_direction(new_coordinates)
-        return new_direction
+        print(f"exploredNodes3 : {self.planet.exploredNodes}")
+
+        next_direction = self.planet.chose_direction(self.current_coordinats)
+        return next_direction
         # #..........self.communication.send_path_messege().........
         # #after the Muthership accepted the request of a new direction
         # self.current_direction = new_direction
@@ -98,10 +102,11 @@ class Robot:
             print(self.data)
             # self.find_Node()
             new_Dir = self.find_Node()
+            print(f"new Direction : {new_Dir}" )
             # <<<<< communication >>>>
             self.update_dir(new_Dir)
 
-            d = (self.current_direction + new_Dir) % 360
-            self.movement.next_path(d)
+            # d = (int(self.current_direction) + int(new_Dir)) % 360
+            self.movement.next_path(int(self.current_direction), int(new_Dir))
 
         # <complit()
