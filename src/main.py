@@ -9,6 +9,8 @@ import uuid
 import signal
 from odometry import Odometry
 from movement import Movement
+from communication import Communication
+from planet import Planet
 from robot import Robot
 
 client = None  # DO NOT EDIT
@@ -37,7 +39,9 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
-    ro = Robot()
+    planet = Planet()
+    com = Communication(client, logger, planet)
+    ro = Robot(com)
     ro.prototyp()
     print("-----------------------------------------------")
 

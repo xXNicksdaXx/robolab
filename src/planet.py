@@ -59,7 +59,7 @@ class Planet:
         self.target = (targetX, targetY)
 
     def get_end_dir(self, dir):
-        return Direction((int(dir) + 180 )%360)
+        return Direction((int(dir) + 180) % 360)
 
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
@@ -205,7 +205,6 @@ class Planet:
 
     # set for every direction Priority
     def setPriorityList(self, direction: List[Direction]):
-        # not sure about this implementation
         prioDir = []
         for d in direction:
             if d == Direction.NORTH:
@@ -243,11 +242,14 @@ class Planet:
         # communication path messege (current_coordinates, current_direction, current_coordinates, current_direction, blocked)
         # self.communication.send_path(self.current_coordinats[0], self.current_coordinats[1], self.current_direction,
         #                              self.current_coordinats[0], self.current_coordinats[1], self.current_direction, "blocked")
-        # # after return 360 degree change the current dircetion
+
+        # after return 360 degree change the current dircetion
         self.current_direction = Direction((int(self.current_direction) + 180) % 360)
 
 
     def explor(self, new_coordinates, new_direction, find_obstacle):
+
+
         print(f"coordinales1 : {new_coordinates}")
         self.current_coordinates = new_coordinates
         self.current_direction = new_direction
@@ -266,13 +268,17 @@ class Planet:
         # if the node is explored change the priority of the path
         self.update_path_Priority(new_coordinates, self.get_end_dir(new_direction), 0)
 
+        # self.communication.send_path(self.current_coordinates[0], self.current_coordinates[1], self.current_direction,
+        #                              new_coordinates[0], new_coordinates[1], new_direction, "free")
+
+
 
 
     def new_explored_node(self, new_coordinates, directions, new_direction):
         self.addExploredNode(new_coordinates, directions, new_direction)
         # communication path messege (current_coordinates, current_direction, new_coordinates, new_direction, free)
-        # self.communication.send_path(self.current_coordinats[0], self.current_coordinats[1], self.current_direction,
-        #                              new_coordinats[0], new_coordinats[1], new_direction, "free")
+        # self.communication.send_path(self.current_coordinates[0], self.current_coordinates[1], self.current_direction,
+        #                              new_coordinates[0], new_coordinates[1], new_direction, "free")
 
         # self.current_coordinats = new_coordinates
         # self.current_direction = new_direction
