@@ -92,17 +92,20 @@ class Communication:
             if payload["type"] == "path":
                 info = payload["payload"]
 
-                self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]),
-                                     ((payload["endX"], payload["endY"]), payload["endDirection"]),
-                                     payload["pathWeight"])
+                self.planet.add_path(((info['startX'], info["startY"]), info["startOrientation"]),
+                                     ((info["endX"], info["endY"]), info["endDirection"]),
+                                     info["pathWeight"])
             if payload["type"] == "pathSelect":
+                info = payload["payload"]
                 # need to be implemented
                 self.planet.set_new_direction(info["startDirection"])
             if payload["type"] == "pathUnveiled":
-                self.planet.add_path(((payload['startX'], payload["startY"]), payload["startOrientation"]), ((payload["endX"],payload["endY"]), payload["endDirection"]),payload["pathWeight"])
+                info = payload["payload"]
+                self.planet.add_path(((info['startX'], info["startY"]), info["startOrientation"]), ((info["endX"],info["endY"]), info["endDirection"]),info["pathWeight"])
             if payload["type"] == "target":
+                info = payload["payload"]
                 # need to be implemented
-                self.planet.set_target(payload["targetX"], payload["targetY"])
+                self.planet.set_target(info["targetX"], info["targetY"])
             # if payload["type"] == "done":
             #     pass
 
@@ -151,7 +154,6 @@ class Communication:
         :return: void
         """
         sdmessage = {"from": "client", "type": "ready"}
-        print(sdmessage)
         self.send_message("explorer/125", sdmessage)
 
     def send_path(self, startX, startY, startD, endX, endY, endD, pathStatus):
@@ -169,7 +171,8 @@ class Communication:
         sdmessage = {"from": "client", "type": "path",
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
                                 "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
-        self.send_message(self.planetsub, json.dumps(sdmessage))
+
+        self.send_message(self.planetsub, sdmessage)
 
 
 
@@ -183,7 +186,7 @@ class Communication:
         """
         sdmessage = {"from": "client", "type": "pathSelect",
                     "payload": {"startX": startX, "startY": startY, "startDirection": startD}}
-        self.send_message(self.planetsub, json.dumps(sdmessage))
+        self.send_message(self.planetsub, sdmessage)
 
     def send_complete(self, finished):
             """
