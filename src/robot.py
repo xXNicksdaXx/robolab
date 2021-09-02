@@ -19,52 +19,58 @@ class Robot:
 
 
     def find_new_direction(self):
-        #calculate the new coordinates and direction
-        print(f"coordinales3 : {self.planet.current_coordinates}")
+
+        print(f"coordinates1 : {self.planet.current_coordinates}")
         if self.first_node:
             print("ready")
             self.communication.send_ready()
             print("send ready")
             new_coordinates = self.planet.current_coordinates
             new_direction = self.planet.current_direction
+            print("coordinates2, direction : ", self.planet.current_coordinates, self.planet.current_direction)
             self.first_node = False
 
+        elif self.movement.asteroid:
+            self.communication.send_path(self.planet.current_direction[0], self.planet.current_coordinates[1],
+                                         int(self.planet.current_direction), self.planet.current_direction[0], self.planet.current_coordinates[1],
+                                         int(self.planet.current_direction),
+                                         "blocked")
+            self.planet.found_obstacle()
+
         else:
-            a = self.odometry.calculate(self.data, self.planet.current_coordinates[0], self.planet.current_coordinates[1],
+            # calculate the new coordinates and direction
+            a = self.odometry.calculate(self.data, self.planet.current_coordinates[0],
+                                        self.planet.current_coordinates[1],
                                         int(self.planet.current_direction))
             new_coordinates = a[0]
             new_direction = Direction(a[1])
-            print(f"a :     {a}")
+            print(f"a_odometry : {a}")
+            self.communication.send_path(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
+                                         int(self.planet.current_direction), new_coordinates[0], new_coordinates[1],
+                                         int(self.planet.get_end_dir(new_direction)), "free")
+            self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
+            self.planet.current_direction = new_direction
 
-            if self.movement.asteroid:
-                new_coordinates = self.planet.current_coordinates
-                new_direction = self.planet.current_direction
-                self.communication.send_path(self.planet.current_direction[0], self.planet.current_coordinates[1],
-                                             self.planet.current_direction, new_coordinates[0], new_coordinates[1],
-                                             int(new_direction),
-                                             "blocked")
-            else:
-                self.communication.send_path(self.planet.current_direction[0], self.planet.current_coordinates[1],
-                                             self.planet.current_direction, new_coordinates[0], new_coordinates[1],
-                                             int(new_direction), "free")
 
         # beginn the exploration in class planet
-        E = self.planet.explor(new_coordinates, new_direction, self.movement.asteroid)
+        E = self.planet.explor()
         print(E)
         # if new node
         if E == "node not explored yet!":
             directions = self.movement.node()  # [int]
-            self.planet.new_explored_node(self.planet.current_coordinates, directions, self.planet.current_direction)  #save in the dict
+            self.planet.new_explored_node(directions)  #save in the dict
             print(f"exploredNodes : {self.planet.exploredNodes}")
 
 
-        print(f"coordinales : {self.planet.current_coordinates}")
+        print(f"coordinates : {self.planet.current_coordinates}")
 
-        next_direction = self.planet.get_next_direction(new_coordinates)
+        next_direction = self.planet.chose_direction()
+        print("next Direction: ", next_direction)
+        self.planet.set_new_direction(next_direction)
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
-                                           int(new_direction))
-
+                                           int(next_direction))
+        print("direction from MS: ", self.planet.new_direction)
         return self.planet.new_direction
 
 
@@ -88,27 +94,23 @@ class Robot:
 
     def prototyp(self):
 
+        self.communication.send_test_planet()
+
         # while not finished:
         while True:
 
             self.movement.follow_line()
             # traget Messege -> shortest path
             # implement if we have a target -> do go_to_target
-            print(self.movement.data)
-            # if first_node:
-            #     self.communication.send_ready()
-            #     first_node = False
-            #
-            # else:
             self.data = self.movement.data
 
-            new_Dir = self.find_new_direction()
-            print(f"new Direction : {new_Dir}")
+            self.find_new_direction()
+            print(f"new Direction : {self.planet.new_direction}")
 
-            self.update_dir(new_Dir)
+            #self.update_dir(new_Dir)
 
             # d = (int(self.current_direction) + int(new_Dir)) % 360
-            self.movement.next_path(int(self.planet.current_direction), int(new_Dir))
+            self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
 
         # <complit()
         #self.communication.send_complete(True)

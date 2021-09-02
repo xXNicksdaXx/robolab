@@ -7,7 +7,7 @@ from odometry import Odometry
 class Movement:
     # components
     leftMotor = ev3.LargeMotor("outA")
-    rightMotor = ev3.LargeMotor("outC")
+    rightMotor = ev3.LargeMotor("outD")
     colorSensor = ev3.ColorSensor("in1")
     button = ev3.TouchSensor("in2")
     ultrasonicSensor = ev3.UltrasonicSensor("in4")

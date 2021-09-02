@@ -159,6 +159,11 @@ class TestRoboLabPlanet(unittest.TestCase):
         #self.fail('implement me!')
         self.assertIsNone(self.planet.shortest_path((0, 0), (-1, 3)))
 
+    def test_set_coordinates(self):
+
+        self.planet.set_coordinastes(1,3)
+        self.assertEqual(self.planet.current_coordinates, (1, 3))
+
 
 if __name__ == "__main__":
     unittest.main()
