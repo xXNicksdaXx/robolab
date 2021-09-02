@@ -95,28 +95,30 @@ class Communication:
 
                 self.planetsub = "planet/" + info["planetName"] + "/125"
                 self.client.subscribe(self.planetsub)
-                print("hello communication")
                 self.planet.set_parameter(info["startX"], info["startY"], info["startOrientation"])
 
             if payload["type"] == "path":
                 info = payload["payload"]
-
                 self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
                                      ((info["endX"], info["endY"]), info["endDirection"]),
                                      info["pathWeight"])
+                self.planet.set_parameter(info["endX"], info["endY"], self.planet.get_end_dir(info["endDirection"]))
             if payload["type"] == "pathSelect":
                 info = payload["payload"]
                 print("new_dir form MS:  ", info["startDirection"])
                 self.planet.set_new_direction(info["startDirection"])
             if payload["type"] == "pathUnveiled":
                 info = payload["payload"]
-                self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]), ((info["endX"],info["endY"]), info["endDirection"]),info["pathWeight"])
+                self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
+                                     ((info["endX"],info["endY"]), info["endDirection"]),info["pathWeight"])
+                if info["pathStatus"] == "blocked":
+                    self.planet.update_path_Priority((info['startX'], info["startY"]), info["startDirection"], -1)
             if payload["type"] == "target":
                 info = payload["payload"]
                 # need to be implemented
                 self.planet.set_target(info["targetX"], info["targetY"])
-            # if payload["type"] == "done":
-            #     pass
+            if payload["type"] == "done":
+                self.planet.finished = True
 
     # DO NOT EDIT THE METHOD SIGNATURE
     #

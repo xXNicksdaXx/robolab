@@ -36,17 +36,12 @@ class Planet:
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
-
         self.paths = {}
         self.exploredNodes = {}
-
-        # self.current_coordinates = (0, 0)
-        # self.current_direction = Direction.NORTH
         self.current_coordinates = None
         self.current_direction = None
         self.new_direction = None
-
-        #self.communication = communication
+        self.finished = False
 
 
     # some methods wich are related to communication
@@ -57,14 +52,14 @@ class Planet:
         print("set the new direction")
 
         self.new_direction = Direction(new_direction)
-
+    def set_coordinastes(self, X, Y):
+        self.current_coordinates = (X, Y)
     def set_traget(self, targetX, targetY):
         self.target = (targetX, targetY)
 
     def get_end_dir(self, dir):
         return Direction((int(dir) + 180) % 360)
-    def set_coordinastes(self, X, Y):
-        self.current_coordinates = (X, Y)
+
 
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
@@ -251,17 +246,7 @@ class Planet:
 
     def explor(self):
 
-
-        print(f"coordinales1 : {self.current_coordinates}")
-        # self.current_coordinates = new_coordinates
-        # self.current_direction = new_direction
-        # print(self.exploredNodes)
-        # if find_obstacle:
-        #     self.found_obstacle()
-        #     return "found obstacle"
-
         if self.current_coordinates not in self.exploredNodes:
-            print(self.exploredNodes)
             return "node not explored yet!"
 
         # if the node is explored change the priority of the path
@@ -270,16 +255,9 @@ class Planet:
 
     def new_explored_node(self, directions):
         self.addExploredNode(self.current_coordinates, directions, self.current_direction)
-        # communication path messege (current_coordinates, current_direction, new_coordinates, new_direction, free)
-        # self.communication.send_path(self.current_coordinates[0], self.current_coordinates[1], self.current_direction,
-        #                              new_coordinates[0], new_coordinates[1], new_direction, "free")
 
-        # self.current_coordinats = new_coordinates
-        # self.current_direction = new_direction
-        # self.update_path_Priority(self.current_coordinats, self.get_end_dir(self.current_direction), 0)
-
-    def get_next_direction(self, current_coordinates):
-        self.new_direction = self.chose_direction()
-        # commmunication.send_pathSelect(current_coordinates[0], current_coordinates[1], direction)
-        return self.new_direction
+    # def get_next_direction(self, current_coordinates):
+    #     self.new_direction = self.chose_direction()
+    #     # commmunication.send_pathSelect(current_coordinates[0], current_coordinates[1], direction)
+    #     return self.new_direction
 

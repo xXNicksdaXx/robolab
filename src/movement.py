@@ -24,6 +24,7 @@ class Movement:
     derivative = 0
 
     def __init__(self):
+        self.speaker.beep()
         self.leftMotor.reset()
         self.leftMotor.stop_action = "brake"
         self.rightMotor.reset()
