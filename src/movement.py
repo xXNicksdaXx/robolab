@@ -15,9 +15,9 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.69
-    ki = 0.021
-    kd = 0.56
+    kp = 0.67
+    ki = 0.017
+    kd = 0.46
     targetPower = 180
     integral = 0
     lastError = 0
@@ -137,46 +137,38 @@ class Movement:
 
     # 30 degree turn
     def turn_45(self):
-        i = 0
-        self.leftMotor.speed_sp = -70
-        self.rightMotor.speed_sp = 65
-        while i < 240:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            i += 1
+        self.leftMotor.speed_sp = -100
+        self.rightMotor.speed_sp = 95
+        self.leftMotor.command = "run-forever"
+        self.rightMotor.command = "run-forever"
+        time.sleep(1)
         self.stop()
 
     # 90 degree turnaround
     def turn_90(self):
-        i = 0
-        self.leftMotor.speed_sp = 95
-        self.rightMotor.speed_sp = -100
-        while i < 340:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            i += 1
+        self.leftMotor.speed_sp = 125
+        self.rightMotor.speed_sp = -130
+        self.leftMotor.command = "run-forever"
+        self.rightMotor.command = "run-forever"
+        time.sleep(1.45)
         self.stop()
 
     # 180 degree turnaround
     def turn_180(self):
-        i = 0
-        self.leftMotor.speed_sp = 95
-        self.rightMotor.speed_sp = -100
-        while i < 690:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            i += 1
+        self.leftMotor.speed_sp = 125
+        self.rightMotor.speed_sp = -130
+        self.leftMotor.command = "run-forever"
+        self.rightMotor.command = "run-forever"
+        time.sleep(2.9)
         self.stop()
 
     # 270 degree turnaround
     def turn_270(self):
-        i = 0
-        self.leftMotor.speed_sp = 95
-        self.rightMotor.speed_sp = -100
-        while i < 1040:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            i += 1
+        self.leftMotor.speed_sp = 125
+        self.rightMotor.speed_sp = -130
+        self.leftMotor.command = "run-forever"
+        self.rightMotor.command = "run-forever"
+        time.sleep(4.35)
         self.stop()
 
     # measure distance
@@ -213,7 +205,7 @@ class Movement:
                 self.color = colorValue
                 self.to_node()
                 self.node()
-                self.next_path(0, 270)
+                self.next_path(0, 90)
                 self.follow_line()
                 break
             else:
@@ -239,17 +231,12 @@ class Movement:
             print("! FOUND RED NODE !")
         elif self.color == -2:
             print("! FOUND BLUE NODE !")
-        # self.leftMotor.time_sp = 1000
-        # self.rightMotor.time_sp = 1000
-        self.leftMotor.speed_sp = 60
-        self.rightMotor.speed_sp = 60
-        # self.leftMotor.command = "run-timed"
-        # self.rightMotor.command = "run-timed"
-        i = 0
-        while i < 450:
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            i += 1
+        self.leftMotor.speed_sp = 150
+        self.rightMotor.speed_sp = 150
+        self.leftMotor.command = "run-forever"
+        self.rightMotor.command = "run-forever"
+        time.sleep(1)
+        self.stop()
         self.turn_45()
 
     # scans node for paths
@@ -262,20 +249,18 @@ class Movement:
     # counts paths of a node
     def count_path(self):
         time.sleep(1)
-        self.leftMotor.speed_sp = 75
-        self.rightMotor.speed_sp = -80
+        self.leftMotor.speed_sp = 125
+        self.rightMotor.speed_sp = -130
         path = []
         i = 0
         while i < 4:
-            j = 0
             found = False
-            while j < 160:
-                self.leftMotor.command = "run-forever"
-                self.rightMotor.command = "run-forever"
-                new_scan = self.scan_absolute()
-                if new_scan == "black":
-                    found = True
-                j += 1
+            self.leftMotor.command = "run-forever"
+            self.rightMotor.command = "run-forever"
+            time.sleep(1.5)
+            new_scan = self.scan_absolute()
+            if new_scan == "black":
+                found = True
             if found:
                 path.append(i * 90)
             i += 1
