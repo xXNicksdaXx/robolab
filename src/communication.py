@@ -6,7 +6,8 @@ import platform
 import ssl
 import paho.mqtt.client as mqtt
 from queue import Queue
-
+import ev3dev.ev3 as ev3
+import time
 # Fix: SSL certificate problem on macOS
 if all(platform.mac_ver()):
     from OpenSSL import SSL
@@ -52,6 +53,12 @@ class Communication:
         self.logger = logger
         self.planet = planet
 
+    def happy_tone(self):
+        # import statements bitte oben bei den anderen einfügen
+        ev3.Sound.set_volume(50)
+        ev3.Sound.tone(523, 500)
+        ev3.Sound.tone(831, 1000)
+        time.sleep(1)
 
     # DO NOT EDIT THE METHOD SIGNATURE
     def on_message(self, client, data, message):
@@ -80,6 +87,8 @@ class Communication:
             #     "target": (info["targetX"], info["targetY"]),
             #     "done": info["message"]
             # }
+
+            self.happy_tone()
 
             if payload["type"] == "planet":
                 info = payload["payload"]
