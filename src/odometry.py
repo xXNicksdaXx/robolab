@@ -62,4 +62,4 @@ class Odometry:
         elif 325 < angle < 360 or 0 <= angle < 35:
             return 0
         else:
-            return "no valid angle"
+            return 0
