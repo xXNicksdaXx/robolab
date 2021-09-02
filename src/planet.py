@@ -4,6 +4,8 @@
 from enum import IntEnum, unique
 from typing import List, Tuple, Dict, Union
 import math
+
+
 # from communication import Communication
 
 
@@ -32,7 +34,6 @@ class Planet:
     it according to the specifications
     """
 
-
     def __init__(self):
         """ Initializes the data structure """
         self.target = None
@@ -43,24 +44,23 @@ class Planet:
         self.new_direction = None
         self.finished = False
 
-
     # some methods wich are related to communication
     def set_parameter(self, startX, startY, startDir):
         self.current_coordinates = (startX, startY)
         self.current_direction = startDir
+
     def set_new_direction(self, new_direction):
         print("set the new direction")
         self.new_direction = Direction(new_direction)
 
     def set_coordinastes(self, X, Y):
         self.current_coordinates = (X, Y)
+
     def set_traget(self, targetX, targetY):
         self.target = (targetX, targetY)
 
     def get_end_dir(self, dir):
         return Direction((int(dir) + 180) % 360)
-
-
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):
@@ -193,9 +193,9 @@ class Planet:
 
         return shortest_path1
 
-# --------------------for the intelligent Exploration:---------------------------
+    # --------------------for the intelligent Exploration:---------------------------
 
-#for add new explored node:
+    # for add new explored node:
     # transforming the directions from int to Direction
     def get_real_directions(self, directions: List[int], current_dir):
         real_dir = []
@@ -224,7 +224,7 @@ class Planet:
         prioDir = self.setPriorityList(real_dir)
         self.exploredNodes[node] = prioDir
 
-# ------------for the main exploration ---------------
+    # ------------for the main exploration ---------------
 
     def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
         for a in self.exploredNodes[node]:
@@ -243,7 +243,6 @@ class Planet:
         # after return 360 degree change the current dircetion
         self.current_direction = Direction((int(self.current_direction) + 180) % 360)
 
-
     def explor(self):
 
         if self.current_coordinates not in self.exploredNodes:
@@ -252,7 +251,6 @@ class Planet:
         # if the node is explored change the priority of the path
         self.update_path_Priority(self.current_coordinates, self.get_end_dir(self.current_direction), 0)
 
-
     def new_explored_node(self, directions):
         self.addExploredNode(self.current_coordinates, directions, self.current_direction)
 
@@ -260,4 +258,3 @@ class Planet:
     #     self.new_direction = self.chose_direction()
     #     # commmunication.send_pathSelect(current_coordinates[0], current_coordinates[1], direction)
     #     return self.new_direction
-
