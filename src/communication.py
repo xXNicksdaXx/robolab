@@ -92,16 +92,16 @@ class Communication:
             if payload["type"] == "path":
                 info = payload["payload"]
 
-                self.planet.add_path(((info['startX'], info["startY"]), info["startOrientation"]),
+                self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
                                      ((info["endX"], info["endY"]), info["endDirection"]),
                                      info["pathWeight"])
             if payload["type"] == "pathSelect":
                 info = payload["payload"]
-                # need to be implemented
+                print("new_dir form MS:  ", info["startDirection"])
                 self.planet.set_new_direction(info["startDirection"])
             if payload["type"] == "pathUnveiled":
                 info = payload["payload"]
-                self.planet.add_path(((info['startX'], info["startY"]), info["startOrientation"]), ((info["endX"],info["endY"]), info["endDirection"]),info["pathWeight"])
+                self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]), ((info["endX"],info["endY"]), info["endDirection"]),info["pathWeight"])
             if payload["type"] == "target":
                 info = payload["payload"]
                 # need to be implemented
@@ -154,6 +154,13 @@ class Communication:
         :return: void
         """
         sdmessage = {"from": "client", "type": "ready"}
+        self.send_message("explorer/125", sdmessage)
+
+    def send_test_planet(self):
+        sdmessage = {"from": "client", "type": "testplanet",
+                     "payload": {
+                         "planetName": "Fassaden-M1"
+                      }}
         self.send_message("explorer/125", sdmessage)
 
     def send_path(self, startX, startY, startD, endX, endY, endD, pathStatus):
