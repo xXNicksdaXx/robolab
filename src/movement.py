@@ -7,7 +7,7 @@ from odometry import Odometry
 class Movement:
     # components
     leftMotor = ev3.LargeMotor("outA")
-    rightMotor = ev3.LargeMotor("outC")
+    rightMotor = ev3.LargeMotor("outD")
     colorSensor = ev3.ColorSensor("in1")
     button = ev3.TouchSensor("in2")
     ultrasonicSensor = ev3.UltrasonicSensor("in4")
@@ -16,8 +16,8 @@ class Movement:
 
     # pid variables
     kp = 0.69
-    ki = 0.017
-    kd = 0.46
+    ki = 0.021
+    kd = 0.56
     targetPower = 180
     integral = 0
     lastError = 0
@@ -28,8 +28,9 @@ class Movement:
         self.leftMotor.stop_action = "brake"
         self.rightMotor.reset()
         self.rightMotor.stop_action = "brake"
-        self.ultrasonicSensor.mode = "US-SI-CM"
+        self.ultrasonicSensor.mode = "US-DIST-CM"
         self.odometry = Odometry()
+        ev3.Sound.set_volume(50)
         self.data = []
         self.black = 30
         self.white = 290
@@ -184,7 +185,8 @@ class Movement:
         if d < 8:
             self.stop()
             print("! FOUND ASTEROID !")
-            self.speaker.beep()
+            self.speaker.tone(262, 1000)
+            self.speaker.tone(369, 1000)
             time.sleep(1)
             self.asteroid = True
             self.next_path(0, 90)
