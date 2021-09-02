@@ -42,8 +42,9 @@ class Robot:
             self.communication.send_path(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                          int(self.planet.current_direction), new_coordinates[0], new_coordinates[1],
                                          int(self.planet.get_end_dir(new_direction)), "free")
-            # self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
-            # self.planet.current_direction = new_direction
+
+            self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
+            self.planet.current_direction = new_direction
             print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
                   self.planet.current_direction)
 
@@ -70,19 +71,22 @@ class Robot:
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
         print("direction after correcting: ", self.planet.new_direction)
-        return self.planet.new_direction
+        # return self.planet.new_direction
 
     def targetReached(self):
-        return self.planet.current_coordinates == self.planet.target
+        return self.planet.shortest_path(self.planet.current_coordinates, self.planet.target)
 
     def finished(self):
         if self.targetReached():
+            print("targetreached")
             return True
-        for e in self.planet.exploredNodes.values():
-            for d in e:
-                if d[1] > 0:
-                    return False
-        return True
+        if self.planet.exploredNodes:
+            for e in self.planet.exploredNodes.values():
+                for d in e:
+                    if d[1] > 0:
+                        return False
+            return True
+        return False
 
     # maybe needed
     def update_dir(self, new_direction):
@@ -110,10 +114,11 @@ class Robot:
                 self.onNode()
                 self.find_new_direction()
 
-                #self.update_dir(new_Dir)
+                self.update_dir(self.planet.new_direction)
 
                 # d = (int(self.current_direction) + int(new_Dir)) % 360
                 self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
+                self.planet.current_direction = self.planet.new_direction
 
             # <complit()
             self.communication.send_complete(not self.targetReached())

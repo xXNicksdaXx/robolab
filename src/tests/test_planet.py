@@ -120,6 +120,7 @@ class TestRoboLabPlanet(unittest.TestCase):
         #self.fail('implement me!')
         target_shortest_path = [((0, 0), Direction.NORTH), ((0, 1), Direction.NORTH), ((0, 2), Direction.EAST)]
         self.assertEqual(target_shortest_path, self.planet.shortest_path((0, 0), (1, 3)))
+        print(self.planet.shortest_path((0, 0), (0, 0)))
 
     def test_target_not_reachable(self):
         """

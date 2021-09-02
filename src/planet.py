@@ -50,8 +50,8 @@ class Planet:
         self.current_direction = startDir
     def set_new_direction(self, new_direction):
         print("set the new direction")
-
         self.new_direction = Direction(new_direction)
+
     def set_coordinastes(self, X, Y):
         self.current_coordinates = (X, Y)
     def set_traget(self, targetX, targetY):

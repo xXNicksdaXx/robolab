@@ -105,7 +105,7 @@ class Communication:
                 self.planet.set_parameter(info["endX"], info["endY"], self.planet.get_end_dir(info["endDirection"]))
             if payload["type"] == "pathSelect":
                 info = payload["payload"]
-                print("new_dir form MS:  ", info["startDirection"])
+                print("new_dir from MS:  ", info["startDirection"])
                 self.planet.set_new_direction(info["startDirection"])
             if payload["type"] == "pathUnveiled":
                 info = payload["payload"]

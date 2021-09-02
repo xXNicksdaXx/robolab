@@ -24,7 +24,6 @@ class Movement:
     derivative = 0
 
     def __init__(self):
-        self.speaker.beep()
         self.leftMotor.reset()
         self.leftMotor.stop_action = "brake"
         self.rightMotor.reset()
@@ -42,6 +41,7 @@ class Movement:
 
     # sets black & white color before start
     def config(self):
+        self.speaker.beep()
         print("--> CONFIG")
         print("1. white")
         print("2. black")
