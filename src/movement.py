@@ -15,10 +15,10 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.67
-    ki = 0.017
-    kd = 0.46
-    targetPower = 180
+    kp = 0.72
+    ki = 0.04
+    kd = 0.57
+    targetPower = 140
     integral = 0
     lastError = 0
     derivative = 0
@@ -204,9 +204,6 @@ class Movement:
                 self.stop()
                 self.color = colorValue
                 self.to_node()
-                self.node()
-                self.next_path(0, 90)
-                self.follow_line()
                 break
             else:
                 error = colorValue - self.offset
@@ -253,14 +250,15 @@ class Movement:
         self.rightMotor.speed_sp = -130
         path = []
         i = 0
+        t = time.time()
         while i < 4:
             found = False
-            self.leftMotor.command = "run-forever"
-            self.rightMotor.command = "run-forever"
-            time.sleep(1.5)
-            new_scan = self.scan_absolute()
-            if new_scan == "black":
-                found = True
+            while time.time() < t + 1.5 * (1 + i):
+                self.leftMotor.command = "run-forever"
+                self.rightMotor.command = "run-forever"
+                new_scan = self.scan_absolute()
+                if new_scan == "black":
+                    found = True
             if found:
                 path.append(i * 90)
             i += 1
