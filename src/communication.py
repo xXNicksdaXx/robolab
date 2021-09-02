@@ -198,4 +198,4 @@ class Communication:
                         "payload": {"message": "Explorer/125 erledigt die Aufgabe!"}}
             if finished:
                 sdmessage.update({"type": "explorationCompleted"})
-            self.send_message("explorer/125", json.dumps(sdmessage))
+            self.send_message("explorer/125", sdmessage)
