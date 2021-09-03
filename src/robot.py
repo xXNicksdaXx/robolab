@@ -28,6 +28,7 @@ class Robot:
             self.first_node = False
 
         elif self.movement.asteroid:
+            self.movement.asteroid = False
             self.communication.send_path(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                          int(self.planet.current_direction), self.planet.current_coordinates[0],
                                          self.planet.current_coordinates[1], int(self.planet.current_direction),
