@@ -18,7 +18,7 @@ class Robot:
         self.data = None
         self.first_node = True
 
-    def endExploration(self):
+    def end_exploration(self):
         if self.planet.exploredNodes:
             for e in self.planet.exploredNodes.values():
                 for d in e:
@@ -27,11 +27,11 @@ class Robot:
         self.planet.target = self.planet.unvisitedNodes.pop()
         return True
 
-    def targetReached(self):
+    def target_reached(self):
         return self.planet.shortest_path(self.planet.current_coordinates, self.planet.target)
 
 
-    def onNode(self):
+    def on_node(self):
 
         # print("coordinates, direction : ", self.planet.current_coordinates, self.planet.current_direction)
         if self.first_node:
@@ -63,10 +63,10 @@ class Robot:
                                          int(self.planet.current_direction), new_coordinates[0], new_coordinates[1],
                                          int(self.planet.get_end_dir(new_direction)), "free")
 
-            self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
+            self.planet.set_coordinates(new_coordinates[0], new_coordinates[1])
             self.planet.current_direction = new_direction
 
-            time.sleep(10)
+            time.sleep(4)
             # print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
             #       self.planet.new_direction)
 
@@ -74,8 +74,8 @@ class Robot:
 
     def find_new_direction(self):
 
-        # beginn the exploration in class planet
-        E = self.planet.explor()
+        # begin the exploration in class planet
+        E = self.planet.explore()
         # print(E)
         # if new node
         if E == "node not explored yet!":
@@ -85,7 +85,7 @@ class Robot:
             self.planet.update_unvisited_Nodes()
 
         # print(f"exploredNodes : {self.planet.exploredNodes}")
-        if self.planet.target or self.endExploration():
+        if self.planet.target or self.end_exploration():
             next_direction = (self.planet.shortest_path(self.planet.current_coordinates, self.planet.target).pop())[1]
         else:
             next_direction = self.planet.chose_direction()
@@ -96,7 +96,7 @@ class Robot:
                                            int(next_direction))
 
     def finished(self):
-        if self.targetReached():
+        if self.target_reached():
             # print("targetreached")
             return True
         if self.planet.exploredNodes:
@@ -120,7 +120,7 @@ class Robot:
             self.movement.next_path(l[1])
             # follow_line to the next node
 
-    def prototyp(self):
+    def prototype(self):
 
         self.communication.send_test_planet()
 
@@ -131,7 +131,7 @@ class Robot:
 
             self.movement.follow_line()
             self.data = self.movement.data
-            self.onNode()
+            self.on_node()
             self.find_new_direction()
             print(f"exploredNodes : {self.planet.exploredNodes}")
 
@@ -144,5 +144,5 @@ class Robot:
             self.planet.current_direction = self.planet.new_direction
 
         # complit()
-        #self.communication.send_complete(not self.targetReached())
+        #self.communication.send_complete(not self.target_reached())
         print("end Exploration")

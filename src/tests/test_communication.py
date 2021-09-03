@@ -48,7 +48,7 @@ class TestRoboLabCommunication(unittest.TestCase):
 
     def test_message_complete(self):
         """
-        This test should check the syntax of the message type "explorationCompleted" or "targetReached"
+        This test should check the syntax of the message type "explorationCompleted" or "target_reached"
         """
         self.fail('implement me!')
 

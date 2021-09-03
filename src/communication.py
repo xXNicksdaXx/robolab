@@ -58,7 +58,6 @@ class Communication:
         ev3.Sound.set_volume(50)
         ev3.Sound.tone(523, 500)
         ev3.Sound.tone(831, 1000)
-        time.sleep(1)
 
     # DO NOT EDIT THE METHOD SIGNATURE
     def on_message(self, client, data, message):
@@ -112,8 +111,8 @@ class Communication:
                 info = payload["payload"]
                 self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
                                      ((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"])
-                self.planet.addExploredPath((info['startX'], info["startY"]), info["startDirection"], 0)
-                self.planet.addExploredPath((info["endX"], info["endY"]), info["endDirection"], 0)
+                self.planet.add_explored_path((info['startX'], info["startY"]), info["startDirection"], 0)
+                self.planet.add_explored_path((info["endX"], info["endY"]), info["endDirection"], 0)
                 if info["pathStatus"] == "blocked":
                     self.planet.update_path_Priority((info['startX'], info["startY"]), info["startDirection"], -1)
                     self.planet.update_path_Priority((info["endX"], info["endY"]), info["endDirection"], -1)
@@ -175,7 +174,7 @@ class Communication:
     def send_test_planet(self):
         sdmessage = {"from": "client", "type": "testplanet",
                      "payload": {
-                         "planetName": "Cream"
+                         "planetName": "Fassaden"
                       }}
         self.send_message("explorer/125", sdmessage)
 
@@ -213,11 +212,11 @@ class Communication:
 
     def send_complete(self, finished):
             """
-            Sends message of the type "targetReached" or "explorationCompleted"
+            Sends message of the type "target_reached" or "explorationCompleted"
             :param finished: boolean
             :return: void
             """
-            sdmessage = {"from": "client", "type": "targetReached",
+            sdmessage = {"from": "client", "type": "target_reached",
                         "payload": {"message": "Explorer/125 erledigt die Aufgabe!"}}
             if finished:
                 sdmessage.update({"type": "explorationCompleted"})

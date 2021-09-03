@@ -55,10 +55,10 @@ class Planet:
         # print("set the new direction")
         self.new_direction = Direction(new_direction)
 
-    def set_coordinastes(self, X, Y):
+    def set_coordinates(self, X, Y):
         self.current_coordinates = (X, Y)
 
-    def set_traget(self, targetX, targetY):
+    def set_target(self, targetX, targetY):
         self.target = (targetX, targetY)
 
     def get_end_dir(self, dir):
@@ -112,7 +112,7 @@ class Planet:
         return self.paths
 
     # Method to find the MinDistance
-    def findMinimum(self, list: [], dict: {}):
+    def find_minimum(self, list: [], dict: {}):
 
         myList = []
         for l in list:
@@ -140,7 +140,7 @@ class Planet:
             print("Target not reachable")
             return None
 
-        # else if the target is reachable calculat Dijkstra and get the result path
+        # else if the target is reachable calculate Dijkstra and get the result path
         return self.dijkstra(start, target)
 
     def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[
@@ -168,7 +168,7 @@ class Planet:
         dist[start] = 0
 
         while Q:
-            u = self.findMinimum(Q, dist)  # Node with minimum distance
+            u = self.find_minimum(Q, dist)  # Node with minimum distance
             Q.remove(u)
 
             if u == target:
@@ -184,11 +184,11 @@ class Planet:
                             Dir = n
                     prev[p[0]] = (u, Dir)
 
-        uTraget = target
-        if prev[uTraget] or uTraget == start:
-            while prev[uTraget]:
-                shortest_path.append(prev[uTraget])
-                uTraget = prev[uTraget][0]
+        u_target = target
+        if prev[u_target] or u_target == start:
+            while prev[u_target]:
+                shortest_path.append(prev[u_target])
+                u_target = prev[u_target][0]
 
         while shortest_path:  # to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
@@ -206,7 +206,7 @@ class Planet:
         return real_dir
 
     # set for every direction Priority
-    def setPriorityList(self, direction: List[Direction]):
+    def set_priority_list(self, direction: List[Direction]):
         prioDir = []
         for d in direction:
             if d == Direction.NORTH:
@@ -220,16 +220,16 @@ class Planet:
 
         return prioDir
 
-    def addExploredNode(self, node: Tuple[int, int], directions: List[int], current_dir):
+    def add_explored_node(self, node: Tuple[int, int], directions: List[int], current_dir):
         # dircetions = [0,90,180,270]
         real_dir = self.get_real_directions(directions, current_dir)
-        prioDir = self.setPriorityList(real_dir)  # [(N, 4), (S, 1), (W, 2), (E, 3)]
+        prio_dir = self.set_priority_list(real_dir)  # [(N, 4), (S, 1), (W, 2), (E, 3)]
         if node in self.exploredNodes:
-            for e in prioDir:
+            for e in prio_dir:
                 if e[0] not in self.get_paths()[node].keys():
                     self.exploredNodes[node].append(e)
         else:
-            self.exploredNodes[node] = prioDir
+            self.exploredNodes[node] = prio_dir
 
     def update_unvisited_Nodes(self):
         for n in self.visitedNodes:
@@ -237,7 +237,7 @@ class Planet:
                 self.unvisitedNodes.remove(n)
                 print("Deleted : ", n)
 
-    def addExploredPath(self, node, Dir, i):
+    def add_explored_path(self, node, Dir, i):
         if node not in self.exploredNodes:
             self.unvisitedNodes.append(node)
             self.exploredNodes[node] = [(Direction(Dir), i)]
@@ -265,7 +265,7 @@ class Planet:
         # after return 360 degree change the current dircetion
         self.current_direction = Direction((int(self.current_direction) + 180) % 360)
 
-    def explor(self):
+    def explore(self):
 
         if self.current_coordinates not in self.visitedNodes:
             return "node not explored yet!"
@@ -274,7 +274,7 @@ class Planet:
         self.update_path_Priority(self.current_coordinates, self.get_end_dir(self.current_direction), 0)
 
     def new_explored_node(self, directions):
-        self.addExploredNode(self.current_coordinates, directions, self.current_direction)
+        self.add_explored_node(self.current_coordinates, directions, self.current_direction)
         self.update_path_Priority(self.current_coordinates, self.get_end_dir(self.current_direction), 0)
 
     # def get_next_direction(self, current_coordinates):

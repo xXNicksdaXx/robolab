@@ -162,7 +162,7 @@ class TestRoboLabPlanet(unittest.TestCase):
 
     def test_set_coordinates(self):
 
-        self.planet.set_coordinastes(1,3)
+        self.planet.set_coordinates(1, 3)
         self.assertEqual(self.planet.current_coordinates, (1, 3))
 
 
