@@ -107,12 +107,18 @@ class Communication:
                 info = payload["payload"]
                 print("new_dir from MS:  ", info["startDirection"])
                 self.planet.set_new_direction(info["startDirection"])
+                print(self.planet.new_direction)
             if payload["type"] == "pathUnveiled":
                 info = payload["payload"]
                 self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
-                                     ((info["endX"],info["endY"]), info["endDirection"]),info["pathWeight"])
+                                     ((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"])
+                self.planet.addExploredPath((info['startX'], info["startY"]), info["startDirection"], 0)
+                self.planet.addExploredPath((info["endX"], info["endY"]), info["endDirection"], 0)
                 if info["pathStatus"] == "blocked":
                     self.planet.update_path_Priority((info['startX'], info["startY"]), info["startDirection"], -1)
+                    self.planet.update_path_Priority((info["endX"], info["endY"]), info["endDirection"], -1)
+                    self.planet.addExploredPath((info['startX'], info["startY"]), info["startDirection"], -1)
+                    self.planet.addExploredPath((info["endX"], info["endY"]), info["endDirection"], -1)
             if payload["type"] == "target":
                 info = payload["payload"]
                 # need to be implemented

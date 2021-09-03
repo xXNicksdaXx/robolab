@@ -47,7 +47,7 @@ class Planet:
     # some methods wich are related to communication
     def set_parameter(self, startX, startY, startDir):
         self.current_coordinates = (startX, startY)
-        self.current_direction = startDir
+        self.current_direction = Direction(startDir)
 
     def set_new_direction(self, new_direction):
         print("set the new direction")
@@ -224,6 +224,12 @@ class Planet:
         prioDir = self.setPriorityList(real_dir)
         self.exploredNodes[node] = prioDir
 
+    def addExploredPath(self, node, Dir, i):
+        if node not in self.exploredNodes:
+            self.exploredNodes[node] = [(Direction(Dir), i)]
+        else:
+            self.update_path_Priority(node, Direction(Dir), i)
+
     # ------------for the main exploration ---------------
 
     def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
@@ -253,6 +259,7 @@ class Planet:
 
     def new_explored_node(self, directions):
         self.addExploredNode(self.current_coordinates, directions, self.current_direction)
+        self.update_path_Priority(self.current_coordinates, self.get_end_dir(self.current_direction), 0)
 
     # def get_next_direction(self, current_coordinates):
     #     self.new_direction = self.chose_direction()

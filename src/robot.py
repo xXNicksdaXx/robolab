@@ -2,6 +2,8 @@ from planet import Planet, Direction
 from communication import Communication
 from odometry import Odometry
 from movement import Movement
+import time
+
 
 
 # from src.movement import Movement
@@ -33,6 +35,8 @@ class Robot:
             self.planet.found_obstacle()
 
         else:
+            self.update_dir(self.planet.current_direction)
+
             # calculate the new coordinates and direction
             a = self.odometry.calculate(self.data, self.planet.current_coordinates[0],
                                         self.planet.current_coordinates[1], int(self.planet.current_direction))
@@ -45,8 +49,9 @@ class Robot:
 
             self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
             self.planet.current_direction = new_direction
+            time.sleep(2)
             print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
-                  self.planet.current_direction)
+                  self.planet.new_direction)
 
 
 
@@ -62,11 +67,11 @@ class Robot:
 
         print(f"exploredNodes : {self.planet.exploredNodes}")
         if self.planet.target:
-            next_direction = self.planet.shortest_path(self.planet.current_coordinates, self.planet.target).pop()
+            next_direction = self.planet.shortest_path(self.planet.current_coordinates, self.planet.target).pop()[1]
         else:
             next_direction = self.planet.chose_direction()
         print("next Direction from Robot: ", next_direction)
-        self.planet.set_new_direction(next_direction)
+        self.planet.set_new_direction(int(next_direction))
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
@@ -114,9 +119,9 @@ class Robot:
                 self.onNode()
                 self.find_new_direction()
 
-                self.update_dir(self.planet.new_direction)
-
-                # d = (int(self.current_direction) + int(new_Dir)) % 360
+                # self.update_dir(self.planet.new_direction)
+                time.sleep(3.5)
+                print("currentDir: ", self.planet.current_direction, "NewDir : ", self.planet.new_direction)
                 self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
                 self.planet.current_direction = self.planet.new_direction
 
