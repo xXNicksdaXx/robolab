@@ -20,16 +20,16 @@ class Robot:
 
     def onNode(self):
 
-        print("coordinates, direction : ", self.planet.current_coordinates, self.planet.current_direction)
+        # print("coordinates, direction : ", self.planet.current_coordinates, self.planet.current_direction)
         if self.first_node:
             self.communication.send_ready()
-            print("after ready coordinates, direction : ", self.planet.current_coordinates,
-                  self.planet.current_direction)
+            # print("after ready coordinates, direction : ", self.planet.current_coordinates,
+            #       self.planet.current_direction)
             self.first_node = False
 
         elif self.movement.asteroid:
             self.communication.send_path(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
-                                         int(self.planet.current_direction), self.planet.current_direction[0],
+                                         int(self.planet.current_direction), self.planet.current_coordinates[0],
                                          self.planet.current_coordinates[1], int(self.planet.current_direction),
                                          "blocked")
             self.planet.found_obstacle()
@@ -38,22 +38,22 @@ class Robot:
             self.update_dir(self.planet.current_direction)
 
             # calculate the new coordinates and direction
-            print("befor odometry coordinates, direction : ", self.planet.current_coordinates,
-                  self.planet.current_direction)
+            # print("befor odometry coordinates, direction : ", self.planet.current_coordinates,
+            #       self.planet.current_direction)
             a = self.odometry.calculate(self.data, self.planet.current_coordinates[0],
                                         self.planet.current_coordinates[1], int(self.planet.current_direction))
             new_coordinates = a[0]
             new_direction = Direction(a[1])
-            print(f"a_odometry : {a}")
+            # print(f"a_odometry : {a}")
             self.communication.send_path(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                          int(self.planet.current_direction), new_coordinates[0], new_coordinates[1],
                                          int(self.planet.get_end_dir(new_direction)), "free")
 
             self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
             self.planet.current_direction = new_direction
-            time.sleep(3.5)
-            print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
-                  self.planet.new_direction)
+            time.sleep(4.5)
+            # print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
+            #       self.planet.new_direction)
 
 
 
@@ -61,18 +61,19 @@ class Robot:
 
         # beginn the exploration in class planet
         E = self.planet.explor()
-        print(E)
+        # print(E)
         # if new node
         if E == "node not explored yet!":
             directions = self.movement.node()  # [int]
             self.planet.new_explored_node(directions)  #save in the dict
+            self.planet.visitedNodes.append(self.planet.current_coordinates)
 
-        print(f"exploredNodes : {self.planet.exploredNodes}")
+        # print(f"exploredNodes : {self.planet.exploredNodes}")
         if self.planet.target:
             next_direction = self.planet.shortest_path(self.planet.current_coordinates, self.planet.target).pop()[1]
         else:
             next_direction = self.planet.chose_direction()
-        print("next Direction from Robot: ", next_direction)
+        # print("next Direction from Robot: ", next_direction)
         self.planet.set_new_direction(int(next_direction))
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
@@ -83,7 +84,7 @@ class Robot:
 
     def finished(self):
         if self.targetReached():
-            print("targetreached")
+            # print("targetreached")
             return True
         if self.planet.exploredNodes:
             for e in self.planet.exploredNodes.values():
@@ -116,11 +117,11 @@ class Robot:
                 self.data = self.movement.data
                 self.onNode()
                 self.find_new_direction()
-
+                print(f"exploredNodes : {self.planet.exploredNodes}")
                 # self.update_dir(self.planet.new_direction)
                 time.sleep(4)
-                print("after correcting currentDir: ", self.planet.current_direction, "NewDir : ",
-                      self.planet.new_direction)
+                # print("after correcting currentDir: ", self.planet.current_direction, "NewDir : ",
+                #       self.planet.new_direction)
                 self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
                 self.planet.current_direction = self.planet.new_direction
 

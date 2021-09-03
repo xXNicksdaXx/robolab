@@ -39,6 +39,7 @@ class Planet:
         self.target = None
         self.paths = {}
         self.exploredNodes = {}
+        self.visitedNodes = []
         self.current_coordinates = None
         self.current_direction = None
         self.new_direction = None
@@ -50,7 +51,7 @@ class Planet:
         self.current_direction = Direction(startDir)
 
     def set_new_direction(self, new_direction):
-        print("set the new direction")
+        # print("set the new direction")
         self.new_direction = Direction(new_direction)
 
     def set_coordinastes(self, X, Y):
@@ -221,8 +222,13 @@ class Planet:
     def addExploredNode(self, node: Tuple[int, int], directions: List[int], current_dir):
         # dircetions = [0,90,180,270]
         real_dir = self.get_real_directions(directions, current_dir)
-        prioDir = self.setPriorityList(real_dir)
-        self.exploredNodes[node] = prioDir
+        prioDir = self.setPriorityList(real_dir)  # [(N, 4), (S, 1), (W, 2), (E, 3)]
+        if node in self.exploredNodes:
+            for e in prioDir:
+                if e[0] not in self.get_paths()[node].keys():
+                    self.exploredNodes[node].append(e)
+        else:
+            self.exploredNodes[node] = prioDir
 
     def addExploredPath(self, node, Dir, i):
         if node not in self.exploredNodes:
@@ -251,7 +257,7 @@ class Planet:
 
     def explor(self):
 
-        if self.current_coordinates not in self.exploredNodes:
+        if self.current_coordinates not in self.visitedNodes:
             return "node not explored yet!"
 
         # if the node is explored change the priority of the path

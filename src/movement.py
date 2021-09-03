@@ -269,6 +269,8 @@ class Movement:
     # find next path
     def next_path(self, curDir, newDir):
         degree = (curDir + newDir) % 360  # HERE: which path to choose, in degree!
+        if curDir >= newDir:
+            degree = (newDir - curDir + 360) % 360
         if degree == 90:
             self.turn_90()
         elif degree == 180:

@@ -137,8 +137,8 @@ class Communication:
         :param message: Object
         :return: void
         """
-        print("send messagge")
-        print(topic, message)
+        # print("send messagge")
+        # print(topic, message)
         self.logger.debug('Send to: ' + topic)
         self.logger.debug(json.dumps(message, indent=2))
 
@@ -176,7 +176,7 @@ class Communication:
     def send_test_planet(self):
         sdmessage = {"from": "client", "type": "testplanet",
                      "payload": {
-                         "planetName": "Fassaden-M1"
+                         "planetName": "Fassaden"
                       }}
         self.send_message("explorer/125", sdmessage)
 
