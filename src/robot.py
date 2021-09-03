@@ -20,11 +20,11 @@ class Robot:
 
     def onNode(self):
 
-        print("coordinates1, direction : ", self.planet.current_coordinates, self.planet.current_direction)
+        print("coordinates, direction : ", self.planet.current_coordinates, self.planet.current_direction)
         if self.first_node:
-            print("ready")
             self.communication.send_ready()
-            print("coordinates2, direction : ", self.planet.current_coordinates, self.planet.current_direction)
+            print("after ready coordinates, direction : ", self.planet.current_coordinates,
+                  self.planet.current_direction)
             self.first_node = False
 
         elif self.movement.asteroid:
@@ -38,6 +38,8 @@ class Robot:
             self.update_dir(self.planet.current_direction)
 
             # calculate the new coordinates and direction
+            print("befor odometry coordinates, direction : ", self.planet.current_coordinates,
+                  self.planet.current_direction)
             a = self.odometry.calculate(self.data, self.planet.current_coordinates[0],
                                         self.planet.current_coordinates[1], int(self.planet.current_direction))
             new_coordinates = a[0]
@@ -49,7 +51,7 @@ class Robot:
 
             self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
             self.planet.current_direction = new_direction
-            time.sleep(2)
+            time.sleep(3.5)
             print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
                   self.planet.new_direction)
 
@@ -75,8 +77,6 @@ class Robot:
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
-        print("direction after correcting: ", self.planet.new_direction)
-        # return self.planet.new_direction
 
     def targetReached(self):
         return self.planet.shortest_path(self.planet.current_coordinates, self.planet.target)
@@ -113,17 +113,16 @@ class Robot:
             #while True:
 
                 self.movement.follow_line()
-                # traget Messege -> shortest path
-                # implement if we have a target -> do go_to_target
                 self.data = self.movement.data
                 self.onNode()
                 self.find_new_direction()
 
                 # self.update_dir(self.planet.new_direction)
-                time.sleep(3.5)
-                print("currentDir: ", self.planet.current_direction, "NewDir : ", self.planet.new_direction)
+                time.sleep(4)
+                print("after correcting currentDir: ", self.planet.current_direction, "NewDir : ",
+                      self.planet.new_direction)
                 self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
                 self.planet.current_direction = self.planet.new_direction
 
-            # <complit()
+            # complit()
             self.communication.send_complete(not self.targetReached())
