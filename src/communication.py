@@ -117,8 +117,7 @@ class Communication:
                 if info["pathStatus"] == "blocked":
                     self.planet.update_path_Priority((info['startX'], info["startY"]), info["startDirection"], -1)
                     self.planet.update_path_Priority((info["endX"], info["endY"]), info["endDirection"], -1)
-                    self.planet.addExploredPath((info['startX'], info["startY"]), info["startDirection"], -1)
-                    self.planet.addExploredPath((info["endX"], info["endY"]), info["endDirection"], -1)
+
             if payload["type"] == "target":
                 info = payload["payload"]
                 # need to be implemented
@@ -176,7 +175,7 @@ class Communication:
     def send_test_planet(self):
         sdmessage = {"from": "client", "type": "testplanet",
                      "payload": {
-                         "planetName": "Fassaden"
+                         "planetName": "Cream"
                       }}
         self.send_message("explorer/125", sdmessage)
 

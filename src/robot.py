@@ -18,6 +18,19 @@ class Robot:
         self.data = None
         self.first_node = True
 
+    def endExploration(self):
+        if self.planet.exploredNodes:
+            for e in self.planet.exploredNodes.values():
+                for d in e:
+                    if d[1] > 0:
+                        return False
+        self.planet.target = self.planet.unvisitedNodes.pop()
+        return True
+
+    def targetReached(self):
+        return self.planet.shortest_path(self.planet.current_coordinates, self.planet.target)
+
+
     def onNode(self):
 
         # print("coordinates, direction : ", self.planet.current_coordinates, self.planet.current_direction)
@@ -52,7 +65,8 @@ class Robot:
 
             self.planet.set_coordinastes(new_coordinates[0], new_coordinates[1])
             self.planet.current_direction = new_direction
-            time.sleep(4.5)
+
+            time.sleep(10)
             # print("coordinates2, direction after correcting: ", self.planet.current_coordinates,
             #       self.planet.new_direction)
 
@@ -68,10 +82,11 @@ class Robot:
             directions = self.movement.node()  # [int]
             self.planet.new_explored_node(directions)  #save in the dict
             self.planet.visitedNodes.append(self.planet.current_coordinates)
+            self.planet.update_unvisited_Nodes()
 
         # print(f"exploredNodes : {self.planet.exploredNodes}")
-        if self.planet.target:
-            next_direction = self.planet.shortest_path(self.planet.current_coordinates, self.planet.target).pop()[1]
+        if self.planet.target or self.endExploration():
+            next_direction = (self.planet.shortest_path(self.planet.current_coordinates, self.planet.target).pop())[1]
         else:
             next_direction = self.planet.chose_direction()
         # print("next Direction from Robot: ", next_direction)
@@ -79,9 +94,6 @@ class Robot:
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
-
-    def targetReached(self):
-        return self.planet.shortest_path(self.planet.current_coordinates, self.planet.target)
 
     def finished(self):
         if self.targetReached():
@@ -92,6 +104,9 @@ class Robot:
                 for d in e:
                     if d[1] > 0:
                         return False
+            if self.planet.unvisitedNodes:
+                self.planet.target = self.planet.unvisitedNodes.pop()
+                return False
             return True
         return False
 
@@ -110,21 +125,24 @@ class Robot:
         self.communication.send_test_planet()
 
 
-        while not self.planet.finished:
-            while not self.finished():
-            #while True:
+        #while not self.planet.finished:
+        while not self.finished():
+        #while True:
 
-                self.movement.follow_line()
-                self.data = self.movement.data
-                self.onNode()
-                self.find_new_direction()
-                print(f"exploredNodes : {self.planet.exploredNodes}")
-                # self.update_dir(self.planet.new_direction)
-                time.sleep(4)
-                # print("after correcting currentDir: ", self.planet.current_direction, "NewDir : ",
-                #       self.planet.new_direction)
-                self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
-                self.planet.current_direction = self.planet.new_direction
+            self.movement.follow_line()
+            self.data = self.movement.data
+            self.onNode()
+            self.find_new_direction()
+            print(f"exploredNodes : {self.planet.exploredNodes}")
 
-            # complit()
-            self.communication.send_complete(not self.targetReached())
+            # self.update_dir(self.planet.new_direction)
+            time.sleep(4)
+            print("unvisitedNodes: ", self.planet.unvisitedNodes)
+            print("after correcting currentDir: ", self.planet.current_direction, "NewDir : ",
+                  self.planet.new_direction)
+            self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
+            self.planet.current_direction = self.planet.new_direction
+
+        # complit()
+        #self.communication.send_complete(not self.targetReached())
+        print("end Exploration")

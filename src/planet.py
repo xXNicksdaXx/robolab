@@ -40,6 +40,7 @@ class Planet:
         self.paths = {}
         self.exploredNodes = {}
         self.visitedNodes = []
+        self.unvisitedNodes = []
         self.current_coordinates = None
         self.current_direction = None
         self.new_direction = None
@@ -230,11 +231,20 @@ class Planet:
         else:
             self.exploredNodes[node] = prioDir
 
+    def update_unvisited_Nodes(self):
+        for n in self.visitedNodes:
+            while n in self.unvisitedNodes:
+                self.unvisitedNodes.remove(n)
+                print("Deleted : ", n)
+
     def addExploredPath(self, node, Dir, i):
         if node not in self.exploredNodes:
+            self.unvisitedNodes.append(node)
             self.exploredNodes[node] = [(Direction(Dir), i)]
         else:
             self.update_path_Priority(node, Direction(Dir), i)
+
+
 
     # ------------for the main exploration ---------------
 
