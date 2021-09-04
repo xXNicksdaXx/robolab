@@ -16,7 +16,7 @@ class Movement:
 
     # pid variables
     kp = 0.71
-    ki = 0.05
+    ki = 0.053
     kd = 0.53
     targetPower = 150
     integral = 0
@@ -138,11 +138,11 @@ class Movement:
 
     # 30 degree turn
     def turn_45(self):
-        self.leftMotor.speed_sp = -100
-        self.rightMotor.speed_sp = 95
+        self.leftMotor.speed_sp = -190
+        self.rightMotor.speed_sp = 185
         self.leftMotor.command = "run-forever"
         self.rightMotor.command = "run-forever"
-        time.sleep(1)
+        time.sleep(0.5)
         self.stop()
 
     # 90 degree turnaround
@@ -231,11 +231,11 @@ class Movement:
             print("! FOUND RED NODE !")
         elif self.color == -2:
             print("! FOUND BLUE NODE !")
-        self.leftMotor.speed_sp = 150
-        self.rightMotor.speed_sp = 150
+        self.leftMotor.speed_sp = 200
+        self.rightMotor.speed_sp = 200
         self.leftMotor.command = "run-forever"
         self.rightMotor.command = "run-forever"
-        time.sleep(1)
+        time.sleep(0.75)
         self.stop()
         self.turn_45()
 
