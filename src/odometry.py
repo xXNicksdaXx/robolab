@@ -46,20 +46,19 @@ class Odometry:
         x = int(round(old_X / 50))  # monument: -1, the best idea ever had
         y = int(round(old_Y / 50))
         dir = self.round_angle(old_Dir)
-
         return (x, y), dir
 
     # rounds angle
     def round_angle(self, angle):
         angle = int(round(angle + 360)) % 360
         print(angle)
-        if 70 < angle < 110:
+        if 55 < angle < 125:
             return 90
-        elif 160 < angle < 200:
+        elif 145 < angle < 215:
             return 180
-        elif 250 < angle < 290:
+        elif 235 < angle < 305:
             return 270
-        elif 340 < angle < 360 or 0 <= angle < 20:
+        elif 325 < angle < 360 or 0 <= angle < 35:
             return 0
         else:
-            return "no valid angle"
+            return 0
