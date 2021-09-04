@@ -30,7 +30,7 @@ class Movement:
         self.rightMotor.stop_action = "brake"
         self.ultrasonicSensor.mode = "US-DIST-CM"
         self.odometry = Odometry()
-        ev3.Sound.set_volume(50)
+        ev3.Sound.set_volume(25)
         self.data = []
         self.black = 30
         self.white = 290
