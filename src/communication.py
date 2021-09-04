@@ -111,11 +111,10 @@ class Communication:
                 info = payload["payload"]
                 self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
                                      ((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"])
-                self.planet.add_explored_path((info['startX'], info["startY"]), info["startDirection"], 0)
-                self.planet.add_explored_path((info["endX"], info["endY"]), info["endDirection"], 0)
-                if info["pathStatus"] == "blocked":
-                    self.planet.update_path_Priority((info['startX'], info["startY"]), info["startDirection"], -1)
-                    self.planet.update_path_Priority((info["endX"], info["endY"]), info["endDirection"], -1)
+                self.planet.react_to_path_unveiled(info['startX'], info["startY"], info["startDirection"], info["pathStatus"])
+                self.planet.react_to_path_unveiled(info["endX"], info["endY"], info["endDirection"], info["pathStatus"])
+
+
 
             if payload["type"] == "target":
                 info = payload["payload"]

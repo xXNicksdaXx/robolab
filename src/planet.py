@@ -38,9 +38,9 @@ class Planet:
         """ Initializes the data structure """
         self.target = None
         self.paths = {}
-        self.exploredNodes = {}
         self.visitedNodes = []
         self.unvisitedNodes = []
+        self.paths_to_be_explored = []
         self.current_coordinates = None
         self.current_direction = None
         self.new_direction = None
@@ -199,85 +199,58 @@ class Planet:
 
     # for add new explored node:
     # transforming the directions from int to Direction
-    def get_real_directions(self, directions: List[int], current_dir):
+    def get_real_directions(self, directions: List[int]):
         real_dir = []
         for d in directions:
-            real_dir.append(Direction((int(current_dir) + d) % 360))
+            real_dir.append(Direction((int(self.current_direction) + d) % 360))
         return real_dir
 
-    # set for every direction Priority
-    def set_priority_list(self, direction: List[Direction]):
-        prioDir = []
-        for d in direction:
-            if d == Direction.NORTH:
-                prioDir.append((d, 4))
-            elif d == Direction.SOUTH:
-                prioDir.append((d, 1))
-            elif d == Direction.WEST:
-                prioDir.append((d, 2))
-            else:
-                prioDir.append((d, 3))
+    def add_visited_node(self, node):
+        self.visitedNodes.append(node)
 
-        return prioDir
+    def add_unvisited_node(self, node):
+        self.unvisitedNodes.append(node)
 
-    def add_explored_node(self, node: Tuple[int, int], directions: List[int], current_dir):
-        # dircetions = [0,90,180,270]
-        real_dir = self.get_real_directions(directions, current_dir)
-        prio_dir = self.set_priority_list(real_dir)  # [(N, 4), (S, 1), (W, 2), (E, 3)]
-        if node in self.exploredNodes:
-            for e in prio_dir:
-                if e[0] not in self.get_paths()[node].keys():
-                    self.exploredNodes[node].append(e)
+    def delete_unvisited_node(self, node):
+        if node in self.unvisitedNodes:
+            self.unvisitedNodes.remove(node)
+
+    def add_path_to_be_explored(self, node, directions):
+        myList = self.get_paths()[node].keys()
+        real_directions = self.get_real_directions(directions)
+
+        for d in real_directions:
+            if d not in myList:
+                self.paths_to_be_explored.append((node, d))
+
+    def delet_explored_path(self, node, direction):
+        if (node, direction) in self.paths_to_be_explored:
+            self.paths_to_be_explored.remove((node, direction))
+
+    def find_next_direction(self):
+        #get the last element form the list
+        next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored)-1]
+        my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
+        if not my_list:
+            return next_tuple[1]
+        return my_list.pop()[1]
+
+    def exploration_complete(self):
+        if not self.unvisitedNodes and not self.paths_to_be_explored:
+            return True
+    def update_paths_to_be_explored(self, node, direction, status):
+        for tuple in self.paths_to_be_explored:
+            if tuple == (node, direction):
+                if status == "blocked":
+                    self.delet_explored_path(node, direction)
+
+    def react_to_path_unveiled(self, node, direction, status):
+        if node in self.visitedNodes:
+            self.update_paths_to_be_explored(node, direction, status)
         else:
-            self.exploredNodes[node] = prio_dir
-
-    def update_unvisited_Nodes(self):
-        for n in self.visitedNodes:
-            while n in self.unvisitedNodes:
-                self.unvisitedNodes.remove(n)
-                print("Deleted : ", n)
-
-    def add_explored_path(self, node, Dir, i):
-        if node not in self.exploredNodes:
-            self.unvisitedNodes.append(node)
-            self.exploredNodes[node] = [(Direction(Dir), i)]
-        else:
-            self.update_path_Priority(node, Direction(Dir), i)
+            self.add_unvisited_node(node)
 
 
 
-    # ------------for the main exploration ---------------
 
-    def update_path_Priority(self, node: Tuple[int, int], direction: Direction, priority: int):
-        for a in self.exploredNodes[node]:
-            if a[0] == direction:
-                self.exploredNodes[node].remove(a)
-                self.exploredNodes[node].append((direction, priority))
 
-    # chosing the direction with the hieghest priority
-    def chose_direction(self):
-        bestPriority = max(self.exploredNodes[self.current_coordinates], key=lambda t: t[1])
-        return bestPriority[0]
-
-    def found_obstacle(self):
-        self.update_path_Priority(self.current_coordinates, self.current_direction, -1)
-
-        # after return 360 degree change the current dircetion
-        self.current_direction = Direction((int(self.current_direction) + 180) % 360)
-
-    def explore(self):
-
-        if self.current_coordinates not in self.visitedNodes:
-            return "node not explored yet!"
-
-        # if the node is explored change the priority of the path
-        self.update_path_Priority(self.current_coordinates, self.get_end_dir(self.current_direction), 0)
-
-    def new_explored_node(self, directions):
-        self.add_explored_node(self.current_coordinates, directions, self.current_direction)
-        self.update_path_Priority(self.current_coordinates, self.get_end_dir(self.current_direction), 0)
-
-    # def get_next_direction(self, current_coordinates):
-    #     self.new_direction = self.chose_direction()
-    #     # commmunication.send_pathSelect(current_coordinates[0], current_coordinates[1], direction)
-    #     return self.new_direction
