@@ -216,9 +216,12 @@ class Planet:
             self.unvisitedNodes.remove(node)
 
     def add_path_to_be_explored(self, node, directions):
-        myList = self.get_paths()[node].keys()
-        real_directions = self.get_real_directions(directions)
+        if node in self.get_paths():
+            myList = self.get_paths()[node].keys()
+        else:
+            myList = []
 
+        real_directions = self.get_real_directions(directions)
         for d in real_directions:
             if d not in myList:
                 self.paths_to_be_explored.append((node, d))
@@ -227,13 +230,26 @@ class Planet:
         if (node, direction) in self.paths_to_be_explored:
             self.paths_to_be_explored.remove((node, direction))
 
+
     def find_next_direction(self):
-        #get the last element form the list
-        next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored)-1]
-        my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
-        if not my_list:
-            return next_tuple[1]
-        return my_list.pop()[1]
+        if self.paths_to_be_explored:
+            #get the last element form the list
+            next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored)-1]
+            my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
+            if not my_list:
+                return next_tuple[1]
+            print("shoretest path to", my_list[0])
+            return my_list.pop()[1]
+
+        elif self.unvisitedNodes:
+            self.target = self.unvisitedNodes[0]
+
+            sh_path = self.shortest_path(self.current_coordinates, self.target)
+            print("shoretest path to", self.target, sh_path)
+            return sh_path.pop()[1]
+
+    def target_reached(self):
+        return self.target == self.current_coordinates
 
     def exploration_complete(self):
         if not self.unvisitedNodes and not self.paths_to_be_explored:
@@ -241,8 +257,7 @@ class Planet:
     def update_paths_to_be_explored(self, node, direction, status):
         for tuple in self.paths_to_be_explored:
             if tuple == (node, direction):
-                if status == "blocked":
-                    self.delet_explored_path(node, direction)
+                self.delet_explored_path(node, direction)
 
     def react_to_path_unveiled(self, node, direction, status):
         if node in self.visitedNodes:

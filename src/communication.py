@@ -111,8 +111,8 @@ class Communication:
                 info = payload["payload"]
                 self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
                                      ((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"])
-                self.planet.react_to_path_unveiled(info['startX'], info["startY"], info["startDirection"], info["pathStatus"])
-                self.planet.react_to_path_unveiled(info["endX"], info["endY"], info["endDirection"], info["pathStatus"])
+                self.planet.react_to_path_unveiled((info['startX'], info["startY"]), info["startDirection"], info["pathStatus"])
+                self.planet.react_to_path_unveiled((info["endX"], info["endY"]), info["endDirection"], info["pathStatus"])
 
 
 
