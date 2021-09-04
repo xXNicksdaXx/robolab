@@ -205,9 +205,7 @@ class Movement:
                 self.stop()
                 self.color = colorValue
                 self.to_node()
-                self.node()  # REMOVE IN ROBOT BRANCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                self.next_path(0, 270)  # REMOVE IN ROBOT BRANCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                # break         MUST BE A REAL LINE, NO COMMENT
+                break
             else:
                 error = colorValue - self.offset
                 self.integral = 0.67 * self.integral + error
