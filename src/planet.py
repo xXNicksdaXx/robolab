@@ -82,6 +82,7 @@ class Planet:
         if start[0] in self.paths:
             # if the Path exist in the Dictionary
             if start[1] in self.paths[start[0]]:
+                self.paths[start[0]][start[1]] = (target[0], target[1], weight)
                 return 0
             self.paths[start[0]][start[1]] = (target[0], target[1], weight)
             self.add_path(target, start, weight)
@@ -174,9 +175,9 @@ class Planet:
 
             if u == target:
                 break
-            print(self.paths[u].values() )
+            print(self.paths[u].values())
             for p in self.paths[u].values():  # p = (Node, Dir, Weight)
-                if p[0] != u:
+                if p[0] != u and p[2] != -1:
                     alt = dist[u] + p[2]
                     if alt < dist[p[0]]:
                         dist[p[0]] = alt
@@ -250,7 +251,9 @@ class Planet:
             print(f"Target set = {next_node}")
             sh_path = self.shortest_path(self.current_coordinates, next_node)
             print("shortest path to", next_node, sh_path)
-            return sh_path.pop(0)[1]
+            if sh_path:
+                return sh_path.pop(0)[1]
+            return None
 
     # def find_next_direction(self):
     #     if self.paths_to_be_explored:
@@ -277,6 +280,12 @@ class Planet:
             self.update_paths_to_be_explored(node, direction, status)
         else:
             self.add_unvisited_node(node)
+
+    def check_direction(self, next_dir):
+        if self.current_coordinates in self.get_paths():
+            if self.new_direction in self.get_paths()[self.current_coordinates]:
+                if self.get_paths()[self.current_coordinates][self.new_direction][2] == -1:
+                    self.new_direction = next_dir
 
 
 
