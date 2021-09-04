@@ -15,10 +15,10 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.72
-    ki = 0.04
-    kd = 0.57
-    targetPower = 140
+    kp = 0.71
+    ki = 0.05
+    kd = 0.53
+    targetPower = 150
     integral = 0
     lastError = 0
     derivative = 0
@@ -147,29 +147,29 @@ class Movement:
 
     # 90 degree turnaround
     def turn_90(self):
-        self.leftMotor.speed_sp = 125
-        self.rightMotor.speed_sp = -130
+        self.leftMotor.speed_sp = 181
+        self.rightMotor.speed_sp = -185
         self.leftMotor.command = "run-forever"
         self.rightMotor.command = "run-forever"
-        time.sleep(1.45)
+        time.sleep(1)
         self.stop()
 
     # 180 degree turnaround
     def turn_180(self):
-        self.leftMotor.speed_sp = 125
-        self.rightMotor.speed_sp = -130
+        self.leftMotor.speed_sp = 181
+        self.rightMotor.speed_sp = -185
         self.leftMotor.command = "run-forever"
         self.rightMotor.command = "run-forever"
-        time.sleep(2.9)
+        time.sleep(2)
         self.stop()
 
     # 270 degree turnaround
     def turn_270(self):
-        self.leftMotor.speed_sp = 125
-        self.rightMotor.speed_sp = -130
+        self.leftMotor.speed_sp = -185
+        self.rightMotor.speed_sp = 181
         self.leftMotor.command = "run-forever"
         self.rightMotor.command = "run-forever"
-        time.sleep(4.35)
+        time.sleep(1)
         self.stop()
 
     # measure distance
@@ -205,7 +205,9 @@ class Movement:
                 self.stop()
                 self.color = colorValue
                 self.to_node()
-                break
+                self.node()  # REMOVE IN ROBOT BRANCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                self.next_path(0, 270)  # REMOVE IN ROBOT BRANCH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                # break         MUST BE A REAL LINE, NO COMMENT
             else:
                 error = colorValue - self.offset
                 self.integral = 0.67 * self.integral + error
@@ -247,14 +249,14 @@ class Movement:
     # counts paths of a node
     def count_path(self):
         time.sleep(1)
-        self.leftMotor.speed_sp = 125
-        self.rightMotor.speed_sp = -130
+        self.leftMotor.speed_sp = 181
+        self.rightMotor.speed_sp = -185
         path = []
         i = 0
         t = time.time()
         while i < 4:
             found = False
-            while time.time() < t + 1.5 * (1 + i):
+            while time.time() < t + (1 + i):
                 self.leftMotor.command = "run-forever"
                 self.rightMotor.command = "run-forever"
                 new_scan = self.scan_absolute()
@@ -275,6 +277,8 @@ class Movement:
             self.turn_180()
         elif degree == 270:
             self.turn_270()
+            self.leftMotor.speed_sp = 125
+            self.rightMotor.speed_sp = -130
         else:
             self.leftMotor.speed_sp = 95
             self.rightMotor.speed_sp = -100
@@ -282,3 +286,13 @@ class Movement:
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"
         self.stop()
+
+    # the special
+    def spinbot(self):
+        self.leftMotor.speed_sp = -300
+        self.rightMotor.speed_sp = 295
+        self.leftMotor.command = "run-forever"
+        self.rightMotor.command = "run-forever"
+        time.sleep(7)
+        self.stop()
+
