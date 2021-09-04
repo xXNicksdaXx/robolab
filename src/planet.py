@@ -134,7 +134,7 @@ class Planet:
         """
 
         # YOUR CODE FOLLOWS (remove pass, please!)
-
+        print(f"Calculating shortest path")
         # if the target Node is not in the Paths Dictionary
         if target not in self.paths:
             print("Target not reachable")
@@ -147,6 +147,7 @@ class Planet:
         None, List[Tuple[Tuple[int, int], Direction]]]:
 
         # Initialization
+        print(f"Using dijkstra")
         Q = []
         vertex = self.paths.keys()
         dist = {}
@@ -192,7 +193,7 @@ class Planet:
 
         while shortest_path:  # to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
-
+        print(f"result dijkstra: {shortest_path1}")
         return shortest_path1
 
     # --------------------for the intelligent Exploration:---------------------------
@@ -226,7 +227,7 @@ class Planet:
             if d not in myList:
                 self.paths_to_be_explored.append((node, d))
 
-    def delet_explored_path(self, node, direction):
+    def delete_explored_path(self, node, direction):
         if (node, direction) in self.paths_to_be_explored:
             self.paths_to_be_explored.remove((node, direction))
 
@@ -243,9 +244,9 @@ class Planet:
 
         elif self.unvisitedNodes:
             self.target = self.unvisitedNodes[0]
-
+            print(f"Target set = {self.target}")
             sh_path = self.shortest_path(self.current_coordinates, self.target)
-            print("shoretest path to", self.target, sh_path)
+            print("shortest path to", self.target, sh_path)
             return sh_path.pop()[1]
 
     def target_reached(self):
@@ -257,7 +258,7 @@ class Planet:
     def update_paths_to_be_explored(self, node, direction, status):
         for tuple in self.paths_to_be_explored:
             if tuple == (node, direction):
-                self.delet_explored_path(node, direction)
+                self.delete_explored_path(node, direction)
 
     def react_to_path_unveiled(self, node, direction, status):
         if node in self.visitedNodes:

@@ -189,6 +189,8 @@ class Movement:
         self.lastError = 0
         self.derivative = 0
         self.integral = 0
+        self.leftMotor.reset()
+        self.rightMotor.reset()
         self.data = []
 
     # central movement function - works with pid
@@ -278,8 +280,8 @@ class Movement:
             self.leftMotor.speed_sp = 125
             self.rightMotor.speed_sp = -130
         else:
-            self.leftMotor.speed_sp = 95
-            self.rightMotor.speed_sp = -100
+            self.leftMotor.speed_sp = 125
+            self.rightMotor.speed_sp = -130
         while self.scan_absolute() != "black":
             self.leftMotor.command = "run-forever"
             self.rightMotor.command = "run-forever"

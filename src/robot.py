@@ -21,7 +21,7 @@ class Robot:
 
     def on_node(self):
 
-        self.planet.delet_explored_path(self.planet.current_coordinates, self.planet.current_direction)
+        self.planet.delete_explored_path(self.planet.current_coordinates, self.planet.current_direction)
         print("paths_to_be_explored after delete : ", self.planet.paths_to_be_explored)
 
         if self.first_node:
@@ -38,6 +38,8 @@ class Robot:
 
         else:
             # calculate the new coordinates and direction
+            print(self.data)
+            print(f"GIVEN PARAMETERS FOR ODOMETRY: current coordinates: {self.planet.current_coordinates}; current direction: {self.planet.current_direction}")
             a = self.odometry.calculate(self.data, self.planet.current_coordinates[0],
                                         self.planet.current_coordinates[1], int(self.planet.current_direction))
             new_coordinates = a[0]
@@ -61,7 +63,7 @@ class Robot:
             self.planet.delete_unvisited_node(self.planet.current_coordinates)
             print("unvisitedNodes : ", self.planet.unvisitedNodes)
             self.planet.add_path_to_be_explored(self.planet.current_coordinates, directions)
-            self.planet.delet_explored_path(self.planet.current_coordinates, self.planet.get_end_dir(self.planet.current_direction))
+            self.planet.delete_explored_path(self.planet.current_coordinates, self.planet.get_end_dir(self.planet.current_direction))
             print("paths_to_be_explored : ", self.planet.paths_to_be_explored)
 
         next_direction = self.planet.find_next_direction()
