@@ -68,10 +68,13 @@ class Robot:
 
         next_direction = self.planet.find_next_direction()
         print("next_dir :", next_direction)
+        if next_direction is None:
+            return 0
         self.planet.set_new_direction(int(next_direction))
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
+        return 1
 
 
 
@@ -87,7 +90,9 @@ class Robot:
             time.sleep(4)
             # if self.planet.target_reached():
             #     break
-            self.find_new_direction()
+            i = self.find_new_direction()
+            if i == 0:
+                break
             time.sleep(4)
             print("after correcting currentDir: ", self.planet.current_direction, "NewDir : ",
                   self.planet.new_direction)

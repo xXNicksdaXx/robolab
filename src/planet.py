@@ -174,18 +174,21 @@ class Planet:
 
             if u == target:
                 break
+            print(self.paths[u].values() )
             for p in self.paths[u].values():  # p = (Node, Dir, Weight)
-                alt = dist[u] + p[2]
-                if alt < dist[p[0]]:
-                    dist[p[0]] = alt
+                if p[0] != u:
+                    alt = dist[u] + p[2]
+                    if alt < dist[p[0]]:
+                        dist[p[0]] = alt
 
-                    Dir = Direction.NORTH
-                    for n in self.paths[u]:
-                        if self.paths[u][n] == p:
-                            Dir = n
-                    prev[p[0]] = (u, Dir)
+                        Dir = Direction.NORTH
+                        for n in self.paths[u]:
+                            if self.paths[u][n] == p:
+                                Dir = n
+                        prev[p[0]] = (u, Dir)
 
         u_target = target
+        print(prev)
         if prev[u_target] or u_target == start:
             while prev[u_target]:
                 shortest_path.append(prev[u_target])
@@ -243,11 +246,20 @@ class Planet:
             return my_list.pop()[1]
 
         elif self.unvisitedNodes:
-            self.target = self.unvisitedNodes[0]
-            print(f"Target set = {self.target}")
-            sh_path = self.shortest_path(self.current_coordinates, self.target)
-            print("shortest path to", self.target, sh_path)
-            return sh_path.pop()[1]
+            next_node = self.unvisitedNodes[0]
+            print(f"Target set = {next_node}")
+            sh_path = self.shortest_path(self.current_coordinates, next_node)
+            print("shortest path to", next_node, sh_path)
+            return sh_path.pop(0)[1]
+
+    # def find_next_direction(self):
+    #     if self.paths_to_be_explored:
+    #         # get the last element form the list
+    #         next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored) - 1]
+    #         my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
+    #         if not my_list:
+    #             return next_tuple[1]
+    #         return my_list.pop(0)[1]
 
     def target_reached(self):
         return self.target == self.current_coordinates
