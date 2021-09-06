@@ -70,7 +70,7 @@ class Robot:
         return 1
 
     def robot(self):
-        # self.communication.send_test_planet()
+        self.communication.send_test_planet()
         while (not self.planet.exploration_complete() and not self.planet.target_reached()) or self.first_node:
             self.movement.follow_line()
             self.data = self.movement.data

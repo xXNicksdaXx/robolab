@@ -172,7 +172,7 @@ class Communication:
     def send_test_planet(self):
         sdmessage = {"from": "client", "type": "testplanet",
                      "payload": {
-                         "planetName": "Reis"
+                         "planetName": "Cherry"
                      }}
         self.send_message("explorer/125", sdmessage)
 

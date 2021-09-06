@@ -220,13 +220,13 @@ class Planet:
 
         real_directions = self.get_real_directions(directions)
         L = len(real_directions) - 1
-        for i in range(0, L + 1):
-            d = real_directions[L - i]
+        # for i in range(0, L + 1):
+        #     d = real_directions[L - i]
+        #     if d not in myList:
+        #       self.paths_to_be_explored.append((node, d))
+        for d in real_directions:
             if d not in myList:
                 self.paths_to_be_explored.append((node, d))
-        # for d in real_directions:
-        #     if d not in myList:
-        #         self.paths_to_be_explored.append((node, d))
 
     def delete_explored_path(self, node, direction):
         if (node, direction) in self.paths_to_be_explored:
@@ -235,9 +235,9 @@ class Planet:
     def choose_closest_option(self):
         options = []
         if self.paths_to_be_explored:
-            next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored) - 1]
-            if next_tuple[0] == self.current_coordinates:
-                return next_tuple[1]
+            for node in self.paths_to_be_explored:
+                if node[0] == self.current_coordinates:
+                    return node[1]
             for node in self.paths_to_be_explored:
                 path = self.dijkstra(self.current_coordinates, node[0])
                 options.append(path)
@@ -247,9 +247,10 @@ class Planet:
                 options.append(path)
         better_options = [value for value in options if value != ([], 0)]
         print("options :", better_options)
-        minimum = min(better_options, key=lambda t: t[1])[0][0][1]
-        print("minimum", minimum)
-        return minimum
+        if better_options:
+            minimum = min(better_options, key=lambda t: t[1])[0][0][1]
+            print("minimum", minimum)
+            return minimum
 
     def find_next_direction(self):
         if self.target:
@@ -291,5 +292,5 @@ class Planet:
         if self.current_coordinates in self.get_paths():
             if self.new_direction in self.get_paths()[self.current_coordinates].keys():
                 if self.get_paths()[self.current_coordinates][self.new_direction][2] == -1:
-                    # if the path is allready explored do not explore it again
+                    # if the path is already explored do not explore it again
                     self.new_direction = next_dir
