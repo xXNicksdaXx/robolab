@@ -257,10 +257,6 @@ class Planet:
             return None
 
     def target_reached(self):
-        # if self.target:
-        #     if self.target[0] == self.current_coordinates:
-        #         self.target = [x for x in self.target if x != self.current_coordinates]
-        #         return True
         return self.target == self.current_coordinates
 
     def all_targets_reached(self):
@@ -279,8 +275,10 @@ class Planet:
     def react_to_path_unveiled(self, node, direction, status):
         if node in self.visitedNodes:
             self.update_paths_to_be_explored(node, direction, status)
-        if not len(self.get_paths()[node].keys()) == 4:
-            self.add_unvisited_node(node)
+            pass
+        self.add_unvisited_node(node)
+        if len(self.get_paths()[node].keys()) == 4:
+            self.delete_unvisited_node(node)
 
     def check_direction(self, next_dir):
         if self.current_coordinates in self.get_paths():
