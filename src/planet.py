@@ -214,7 +214,8 @@ class Planet:
         self.visitedNodes.append(node)
 
     def add_unvisited_node(self, node):
-        self.unvisitedNodes.append(node)
+        if node not in self.unvisitedNodes:
+            self.unvisitedNodes.append(node)
 
     def delete_unvisited_node(self, node):
         if node in self.unvisitedNodes:
@@ -227,9 +228,14 @@ class Planet:
             myList = []
 
         real_directions = self.get_real_directions(directions)
-        for d in real_directions:
+        L = len(real_directions)-1
+        for i in range[0, L]:
+            d = real_directions[L - i]
             if d not in myList:
                 self.paths_to_be_explored.append((node, d))
+        # for d in real_directions:
+        #     if d not in myList:
+        #         self.paths_to_be_explored.append((node, d))
 
     def delete_explored_path(self, node, direction):
         if (node, direction) in self.paths_to_be_explored:
@@ -237,6 +243,11 @@ class Planet:
 
 
     def find_next_direction(self):
+        if self.target:
+            sh_path = self.shortest_path(self.current_coordinates, self.target)
+            if sh_path:
+                return sh_path.pop(0)[1]
+
         if self.paths_to_be_explored:
             #get the last element form the list
             next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored)-1]
@@ -244,7 +255,7 @@ class Planet:
             if not my_list:
                 return next_tuple[1]
             print("shoretest path to", my_list[0])
-            return my_list.pop()[1]
+            return my_list.pop(0)[1]
 
         elif self.unvisitedNodes:
             next_node = self.unvisitedNodes[0]
@@ -255,21 +266,21 @@ class Planet:
                 return sh_path.pop(0)[1]
             return None
 
-    # def find_next_direction(self):
-    #     if self.paths_to_be_explored:
-    #         # get the last element form the list
-    #         next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored) - 1]
-    #         my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
-    #         if not my_list:
-    #             return next_tuple[1]
-    #         return my_list.pop(0)[1]
-
     def target_reached(self):
+        # if self.target:
+        #     if self.target[0] == self.current_coordinates:
+        #         self.target = [x for x in self.target if x != self.current_coordinates]
+        #         return True
         return self.target == self.current_coordinates
+
+    def all_targets_reached(self):
+        return not self.target   # return [] -> True
 
     def exploration_complete(self):
         if not self.unvisitedNodes and not self.paths_to_be_explored:
             return True
+        return False
+
     def update_paths_to_be_explored(self, node, direction, status):
         for tuple in self.paths_to_be_explored:
             if tuple == (node, direction):
@@ -278,13 +289,13 @@ class Planet:
     def react_to_path_unveiled(self, node, direction, status):
         if node in self.visitedNodes:
             self.update_paths_to_be_explored(node, direction, status)
-        else:
+        if not len(self.get_paths()[node].keys()) == 4:
             self.add_unvisited_node(node)
 
     def check_direction(self, next_dir):
         if self.current_coordinates in self.get_paths():
             if self.new_direction in self.get_paths()[self.current_coordinates]:
-                if self.get_paths()[self.current_coordinates][self.new_direction][2] == -1:
+                if self.get_paths()[self.current_coordinates][self.new_direction]:  #if the path is allready explored do not explore it again
                     self.new_direction = next_dir
 
 

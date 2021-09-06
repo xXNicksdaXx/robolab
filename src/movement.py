@@ -16,9 +16,9 @@ class Movement:
 
     # pid variables
     kp = 0.71
-    ki = 0.053
+    ki = 0.057
     kd = 0.53
-    targetPower = 150
+    targetPower = 120
     integral = 0
     lastError = 0
     derivative = 0

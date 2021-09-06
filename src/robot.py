@@ -38,7 +38,6 @@ class Robot:
 
         else:
             # calculate the new coordinates and direction
-            print(self.data)
             print(f"GIVEN PARAMETERS FOR ODOMETRY: current coordinates: {self.planet.current_coordinates}; current direction: {self.planet.current_direction}")
             a = self.odometry.calculate(self.data, self.planet.current_coordinates[0],
                                         self.planet.current_coordinates[1], int(self.planet.current_direction))
@@ -62,10 +61,13 @@ class Robot:
             print("visitedNodes : ", self.planet.visitedNodes)
             self.planet.delete_unvisited_node(self.planet.current_coordinates)
             print("unvisitedNodes : ", self.planet.unvisitedNodes)
+            # self.planet.target_reached()
+            print("target List :", self.planet.target)
             self.planet.add_path_to_be_explored(self.planet.current_coordinates, directions)
             self.planet.delete_explored_path(self.planet.current_coordinates, self.planet.get_end_dir(self.planet.current_direction))
             print("paths_to_be_explored : ", self.planet.paths_to_be_explored)
 
+        self.planet.update_paths_to_be_explored(self.planet.current_coordinates, self.planet.current_direction, "free")
         next_direction = self.planet.find_next_direction()
         print("next_dir :", next_direction)
         if next_direction is None:
@@ -84,7 +86,7 @@ class Robot:
 
         self.communication.send_test_planet()
 
-        while not self.planet.exploration_complete() or self.first_node:
+        while (not self.planet.exploration_complete() and not self.planet.target_reached()) or self.first_node :
 
             self.movement.follow_line()
             self.data = self.movement.data
@@ -100,8 +102,12 @@ class Robot:
                   self.planet.new_direction)
             self.movement.next_path(int(self.planet.current_direction), int(self.planet.new_direction))
             self.planet.current_direction = self.planet.new_direction
+            print("exploration ", self.planet.exploration_complete())
+            print("target :", self.planet.all_targets_reached())
+            print("first node: ", self.first_node)
 
         # complit()
+
         print("end Exploration")
         self.communication.send_complete(not self.planet.target_reached())
 
