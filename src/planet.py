@@ -115,8 +115,8 @@ class Planet:
     def find_minimum(self, list: [], dict: {}):
 
         myList = []
-        for l in list:
-            myList.append((l, dict[l]))
+        for element in list:
+            myList.append((element, dict[element]))
         Min = min(myList, key=lambda t: t[1])
         return Min[0]
 

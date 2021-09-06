@@ -12,7 +12,6 @@ class Odometry:
         self.a = 12
         self.distance_per_tick = (math.pi * 5.6) / 360
         self.distance = None
-        # self.distance_per_tick = 0.015
 
     def calculate(self, positions, old_X, old_Y, old_Dir):
         old_X *= 50
