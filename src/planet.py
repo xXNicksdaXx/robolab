@@ -138,10 +138,9 @@ class Planet:
             return None
 
         # else if the target is reachable calculate Dijkstra and get the result path
-        return self.dijkstra(start, target)
+        return self.dijkstra(start, target)[0]
 
-    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[
-        None, List[Tuple[Tuple[int, int], Direction]]]:
+    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]):
 
         # Initialization
         Q = []
@@ -183,14 +182,16 @@ class Planet:
                         prev[p[0]] = (u, Dir)
 
         u_target = target
+        d = 0
         if prev[u_target] or u_target == start:
             while prev[u_target]:
+                d = d + dist[u_target]
                 shortest_path.append(prev[u_target])
                 u_target = prev[u_target][0]
 
         while shortest_path:  # to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
-        return shortest_path1
+        return shortest_path1, d
 
     # --------------------for the intelligent Exploration:---------------------------
 
@@ -225,9 +226,6 @@ class Planet:
             d = real_directions[L - i]
             if d not in myList:
                 self.paths_to_be_explored.append((node, d))
-        # for d in real_directions:
-        #     if d not in myList:
-        #         self.paths_to_be_explored.append((node, d))
 
     def delete_explored_path(self, node, direction):
         if (node, direction) in self.paths_to_be_explored:
@@ -248,7 +246,7 @@ class Planet:
             return my_list.pop(0)[1]
 
         elif self.unvisitedNodes:
-            next_node = self.unvisitedNodes[0]
+            next_node = self.unvisitedNodes[len(self.unvisitedNodes)-1]
             print(f"target set : {next_node}")
             sh_path = self.shortest_path(self.current_coordinates, next_node)
             print("shortest path to", next_node, sh_path)
@@ -275,7 +273,7 @@ class Planet:
     def react_to_path_unveiled(self, node, direction, status):
         if node in self.visitedNodes:
             self.update_paths_to_be_explored(node, direction, status)
-            pass
+            return
         self.add_unvisited_node(node)
         if len(self.get_paths()[node].keys()) == 4:
             self.delete_unvisited_node(node)

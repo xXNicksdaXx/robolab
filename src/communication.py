@@ -87,7 +87,7 @@ class Communication:
             #     "done": info["message"]
             # }
 
-            self.happy_tone()
+
 
             if payload["type"] == "planet":
                 info = payload["payload"]
@@ -102,6 +102,7 @@ class Communication:
                                      ((info["endX"], info["endY"]), info["endDirection"]),
                                      info["pathWeight"])
                 self.planet.set_parameter(info["endX"], info["endY"], self.planet.get_end_dir(info["endDirection"]))
+                self.happy_tone()
             if payload["type"] == "pathSelect":
                 info = payload["payload"]
                 print("new direction from mothership:  ", info["startDirection"])
@@ -171,7 +172,7 @@ class Communication:
     def send_test_planet(self):
         sdmessage = {"from": "client", "type": "testplanet",
                      "payload": {
-                         "planetName": "Cream"
+                         "planetName": "Cocoa"
                      }}
         self.send_message("explorer/125", sdmessage)
 
