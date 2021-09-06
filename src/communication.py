@@ -7,10 +7,11 @@ import ssl
 import paho.mqtt.client as mqtt
 from queue import Queue
 import ev3dev.ev3 as ev3
-import time
+
 # Fix: SSL certificate problem on macOS
 if all(platform.mac_ver()):
     from OpenSSL import SSL
+
 
 class Communication:
     """
@@ -33,7 +34,6 @@ class Communication:
             import traceback
             traceback.print_exc()
             raise
-
 
     def __init__(self, mqtt_client, logger, planet):
         """
@@ -104,17 +104,16 @@ class Communication:
                 self.planet.set_parameter(info["endX"], info["endY"], self.planet.get_end_dir(info["endDirection"]))
             if payload["type"] == "pathSelect":
                 info = payload["payload"]
-                print("new_dir from MS:  ", info["startDirection"])
+                print("new direction from mothership:  ", info["startDirection"])
                 self.planet.set_new_direction(info["startDirection"])
-                print(self.planet.new_direction)
             if payload["type"] == "pathUnveiled":
                 info = payload["payload"]
                 self.planet.add_path(((info['startX'], info["startY"]), info["startDirection"]),
                                      ((info["endX"], info["endY"]), info["endDirection"]), info["pathWeight"])
-                self.planet.react_to_path_unveiled((info['startX'], info["startY"]), info["startDirection"], info["pathStatus"])
-                self.planet.react_to_path_unveiled((info["endX"], info["endY"]), info["endDirection"], info["pathStatus"])
-
-
+                self.planet.react_to_path_unveiled((info['startX'], info["startY"]), info["startDirection"],
+                                                   info["pathStatus"])
+                self.planet.react_to_path_unveiled((info["endX"], info["endY"]), info["endDirection"],
+                                                   info["pathStatus"])
 
             if payload["type"] == "target":
                 info = payload["payload"]
@@ -141,7 +140,6 @@ class Communication:
 
         # YOUR CODE FOLLOWS (remove pass, please!)
         self.client.publish(topic, json.dumps(message), qos=1)
-
 
     # DO NOT EDIT THE METHOD SIGNATURE OR BODY
     #
@@ -173,8 +171,8 @@ class Communication:
     def send_test_planet(self):
         sdmessage = {"from": "client", "type": "testplanet",
                      "payload": {
-                         "planetName": "Gromit-M3"
-                      }}
+                         "planetName": "Caramel"
+                     }}
         self.send_message("explorer/125", sdmessage)
 
     def send_path(self, startX, startY, startD, endX, endY, endD, pathStatus):
@@ -190,12 +188,10 @@ class Communication:
         :return: void
         """
         sdmessage = {"from": "client", "type": "path",
-                    "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
-                                "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
+                     "payload": {"startX": startX, "startY": startY, "startDirection": startD, "endX": endX,
+                                 "endY": endY, "endDirection": endD, "pathStatus": pathStatus}}
 
         self.send_message(self.planetsub, sdmessage)
-
-
 
     def send_pathSelect(self, startX, startY, startD):
         """
@@ -206,17 +202,17 @@ class Communication:
         :return: void
         """
         sdmessage = {"from": "client", "type": "pathSelect",
-                    "payload": {"startX": startX, "startY": startY, "startDirection": startD}}
+                     "payload": {"startX": startX, "startY": startY, "startDirection": startD}}
         self.send_message(self.planetsub, sdmessage)
 
     def send_complete(self, finished):
-            """
+        """
             Sends message of the type "target_reached" or "explorationCompleted"
             :param finished: boolean
             :return: void
             """
-            sdmessage = {"from": "client", "type": "target_reached",
-                        "payload": {"message": "Explorer/125 erledigt die Aufgabe!"}}
-            if finished:
-                sdmessage.update({"type": "explorationCompleted"})
-            self.send_message("explorer/125", sdmessage)
+        sdmessage = {"from": "client", "type": "target_reached",
+                     "payload": {"message": "Explorer/125 erledigt die Aufgabe!"}}
+        if finished:
+            sdmessage.update({"type": "explorationCompleted"})
+        self.send_message("explorer/125", sdmessage)

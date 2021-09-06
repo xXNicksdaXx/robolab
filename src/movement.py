@@ -199,7 +199,6 @@ class Movement:
         prevRight = 0
         time.sleep(2)
         self.reset_value()
-        print("note: end drive by pressing button")
         while self.button.value() == 0:  # condition for scan done
             self.distance()
             colorValue = self.scan()
@@ -295,4 +294,3 @@ class Movement:
         self.rightMotor.command = "run-forever"
         time.sleep(7)
         self.stop()
-

@@ -52,7 +52,6 @@ class Planet:
         self.current_direction = Direction(startDir)
 
     def set_new_direction(self, new_direction):
-        # print("set the new direction")
         self.new_direction = Direction(new_direction)
 
     def set_coordinates(self, X, Y):
@@ -61,8 +60,8 @@ class Planet:
     def set_target(self, targetX, targetY):
         self.target = (targetX, targetY)
 
-    def get_end_dir(self, dir):
-        return Direction((int(dir) + 180) % 360)
+    def get_end_dir(self, direction):
+        return Direction((int(direction) + 180) % 360)
 
     def add_path(self, start: Tuple[Tuple[int, int], Direction], target: Tuple[Tuple[int, int], Direction],
                  weight: int):
@@ -134,11 +133,8 @@ class Planet:
         :return: 2-Tuple[List, Direction]
         """
 
-        # YOUR CODE FOLLOWS (remove pass, please!)
-        print(f"Calculating shortest path")
         # if the target Node is not in the Paths Dictionary
         if target not in self.paths:
-            print("Target not reachable")
             return None
 
         # else if the target is reachable calculate Dijkstra and get the result path
@@ -148,7 +144,6 @@ class Planet:
         None, List[Tuple[Tuple[int, int], Direction]]]:
 
         # Initialization
-        print(f"Using dijkstra")
         Q = []
         vertex = self.paths.keys()
         dist = {}
@@ -175,7 +170,6 @@ class Planet:
 
             if u == target:
                 break
-            print(self.paths[u].values())
             for p in self.paths[u].values():  # p = (Node, Dir, Weight)
                 if p[0] != u and p[2] != -1:
                     alt = dist[u] + p[2]
@@ -189,7 +183,6 @@ class Planet:
                         prev[p[0]] = (u, Dir)
 
         u_target = target
-        print(prev)
         if prev[u_target] or u_target == start:
             while prev[u_target]:
                 shortest_path.append(prev[u_target])
@@ -197,7 +190,6 @@ class Planet:
 
         while shortest_path:  # to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
-        print(f"result dijkstra: {shortest_path1}")
         return shortest_path1
 
     # --------------------for the intelligent Exploration:---------------------------
@@ -228,7 +220,7 @@ class Planet:
             myList = []
 
         real_directions = self.get_real_directions(directions)
-        L = len(real_directions)-1
+        L = len(real_directions) - 1
         for i in range(0, L + 1):
             d = real_directions[L - i]
             if d not in myList:
@@ -241,7 +233,6 @@ class Planet:
         if (node, direction) in self.paths_to_be_explored:
             self.paths_to_be_explored.remove((node, direction))
 
-
     def find_next_direction(self):
         if self.target:
             sh_path = self.shortest_path(self.current_coordinates, self.target)
@@ -249,17 +240,16 @@ class Planet:
                 return sh_path.pop(0)[1]
 
         if self.paths_to_be_explored:
-            #get the last element form the list
-            next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored)-1]
+            # get the last element form the list
+            next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored) - 1]
             my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
             if not my_list:
                 return next_tuple[1]
-            print("shoretest path to", my_list[0])
             return my_list.pop(0)[1]
 
         elif self.unvisitedNodes:
             next_node = self.unvisitedNodes[0]
-            print(f"Target set = {next_node}")
+            print(f"target set : {next_node}")
             sh_path = self.shortest_path(self.current_coordinates, next_node)
             print("shortest path to", next_node, sh_path)
             if sh_path:
@@ -274,7 +264,7 @@ class Planet:
         return self.target == self.current_coordinates
 
     def all_targets_reached(self):
-        return not self.target   # return [] -> True
+        return not self.target  # return [] -> True
 
     def exploration_complete(self):
         if not self.unvisitedNodes and not self.paths_to_be_explored:
@@ -294,15 +284,7 @@ class Planet:
 
     def check_direction(self, next_dir):
         if self.current_coordinates in self.get_paths():
-            print("1")
-            print(self.get_paths())
             if self.new_direction in self.get_paths()[self.current_coordinates].keys():
-                print("2")
-                if self.get_paths()[self.current_coordinates][self.new_direction][2] == -1:  #if the path is allready explored do not explore it again
-                    print("3")
+                if self.get_paths()[self.current_coordinates][self.new_direction][2] == -1:
+                    # if the path is allready explored do not explore it again
                     self.new_direction = next_dir
-
-
-
-
-

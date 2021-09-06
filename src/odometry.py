@@ -42,16 +42,14 @@ class Odometry:
             old_Y = new_Y
             old_Dir = math.degrees(new_Dir)
 
-        # print(self.distance)
         x = int(round(old_X / 50))  # monument: -1, the best idea ever had
         y = int(round(old_Y / 50))
-        dir = self.round_angle(old_Dir)
-        return (x, y), dir
+        direction = self.round_angle(old_Dir)
+        return (x, y), direction
 
     # rounds angle
     def round_angle(self, angle):
         angle = int(round(angle + 360)) % 360
-        print(angle)
         if 55 < angle < 125:
             return 90
         elif 145 < angle < 215:

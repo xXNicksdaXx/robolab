@@ -42,8 +42,8 @@ def run():
     planet = Planet()
     com = Communication(client, logger, planet)
     client.loop_start()
-    ro = Robot(com)
-    ro.prototype()
+    robot = Robot(com)
+    robot.robot()
     print("-----------------------------------------------")
 
 
