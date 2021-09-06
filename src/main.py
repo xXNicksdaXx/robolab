@@ -2,16 +2,13 @@
 
 import logging
 import os
-import time
-
 import paho.mqtt.client as mqtt
 import uuid
 import signal
-from odometry import Odometry
-from movement import Movement
 from communication import Communication
 from planet import Planet
 from robot import Robot
+from movement import Movement
 
 client = None  # DO NOT EDIT
 
@@ -23,7 +20,7 @@ def run():
     # Your script isn't able to close the client after crashing.
     global client
 
-    client_id = '125-' + str(uuid.uuid4())  # Replace YOURGROUPID with your group ID
+    client_id = '125-' + str(uuid.uuid4())  # Replace YOUR-GROUP-ID with your group ID
     client = mqtt.Client(client_id=client_id,  # Unique Client-ID to recognize our program
                          clean_session=True,  # We want a clean session after disconnect or abort/crash
                          protocol=mqtt.MQTTv311  # Define MQTT protocol version
@@ -39,13 +36,14 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
+    mo = Movement()
+    mo.follow_line()
     planet = Planet()
     com = Communication(client, logger, planet)
     client.loop_start()
     robot = Robot(com)
     robot.robot()
     print("-----------------------------------------------")
-
 
 
 # DO NOT EDIT

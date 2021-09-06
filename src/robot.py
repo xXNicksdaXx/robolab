@@ -66,9 +66,8 @@ class Robot:
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
-        time.sleep(6)
+        time.sleep(8)
         self.planet.check_direction(next_direction)
-
         return 1
 
     def robot(self):

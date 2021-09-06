@@ -17,8 +17,8 @@ class Movement:
     # pid variables
     kp = 0.69
     ki = 0.058
-    kd = 0.53
-    targetPower = 130
+    kd = 0.58
+    targetPower = 135
     integral = 0
     lastError = 0
     derivative = 0
@@ -203,10 +203,11 @@ class Movement:
             self.distance()
             colorValue = self.scan()
             if colorValue == -1 or colorValue == -2:
-                self.stop()
-                self.color = colorValue
-                self.to_node()
-                break
+                # self.stop()
+                # self.color = colorValue
+                # self.to_node()
+                # break
+                a = 1
             else:
                 error = colorValue - self.offset
                 self.integral = 0.67 * self.integral + error
