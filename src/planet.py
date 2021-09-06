@@ -138,11 +138,9 @@ class Planet:
             return None
 
         # else if the target is reachable calculate Dijkstra and get the result path
-        return self.dijkstra(start, target)
+        return self.dijkstra(start, target)[0]
 
-    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]) -> Union[
-        None, List[Tuple[Tuple[int, int], Direction]]]:
-
+    def dijkstra(self, start: Tuple[int, int], target: Tuple[int, int]):
         # Initialization
         Q = []
         vertex = self.paths.keys()
@@ -181,16 +179,17 @@ class Planet:
                             if self.paths[u][n] == p:
                                 Dir = n
                         prev[p[0]] = (u, Dir)
-
+        d = 0
         u_target = target
         if prev[u_target] or u_target == start:
             while prev[u_target]:
+                d += dist[u_target]
                 shortest_path.append(prev[u_target])
                 u_target = prev[u_target][0]
 
         while shortest_path:  # to fix the order of the first list using lifo order
             shortest_path1.append(shortest_path.pop())
-        return shortest_path1
+        return shortest_path1, d
 
     # --------------------for the intelligent Exploration:---------------------------
 
@@ -233,28 +232,36 @@ class Planet:
         if (node, direction) in self.paths_to_be_explored:
             self.paths_to_be_explored.remove((node, direction))
 
+    def choose_closest_option(self):
+        options = []
+        if self.paths_to_be_explored:
+            next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored) - 1]
+            if next_tuple[0] == self.current_coordinates:
+                return next_tuple[1]
+            for node in self.paths_to_be_explored:
+                path = self.dijkstra(self.current_coordinates, node[0])
+                options.append(path)
+        if self.unvisitedNodes:
+            for node in self.unvisitedNodes:
+                path = self.dijkstra(self.current_coordinates, node)
+                options.append(path)
+        better_options = [value for value in options if value != ([], 0)]
+        print("options :", better_options)
+        minimum = min(better_options, key=lambda t: t[1])[0][0][1]
+        print("minimum", minimum)
+        return minimum
+
     def find_next_direction(self):
         if self.target:
             sh_path = self.shortest_path(self.current_coordinates, self.target)
             if sh_path:
                 return sh_path.pop(0)[1]
 
-        if self.paths_to_be_explored:
-            # get the last element form the list
-            next_tuple = self.paths_to_be_explored[len(self.paths_to_be_explored) - 1]
-            my_list = self.shortest_path(self.current_coordinates, next_tuple[0])
-            if not my_list:
-                return next_tuple[1]
-            return my_list.pop(0)[1]
+        if self.paths_to_be_explored or self.unvisitedNodes:
+            best_tuple = self.choose_closest_option()
+            return best_tuple
 
-        elif self.unvisitedNodes:
-            next_node = self.unvisitedNodes[0]
-            print(f"target set : {next_node}")
-            sh_path = self.shortest_path(self.current_coordinates, next_node)
-            print("shortest path to", next_node, sh_path)
-            if sh_path:
-                return sh_path.pop(0)[1]
-            return None
+        return None
 
     def target_reached(self):
         return self.target == self.current_coordinates
@@ -275,7 +282,7 @@ class Planet:
     def react_to_path_unveiled(self, node, direction, status):
         if node in self.visitedNodes:
             self.update_paths_to_be_explored(node, direction, status)
-            pass
+            return
         self.add_unvisited_node(node)
         if len(self.get_paths()[node].keys()) == 4:
             self.delete_unvisited_node(node)

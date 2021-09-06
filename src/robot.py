@@ -51,12 +51,11 @@ class Robot:
             directions = self.movement.node()  # [int]
             self.planet.add_visited_node(self.planet.current_coordinates)
             print("visited nodes : ", self.planet.visitedNodes)
-            self.planet.delete_unvisited_node(self.planet.current_coordinates)
             print("unvisited nodes : ", self.planet.unvisitedNodes)
             # self.planet.target_reached()
-            print("target list :", self.planet.target)
+            print("target :", self.planet.target)
             self.planet.add_path_to_be_explored(self.planet.current_coordinates, directions)
-
+        self.planet.delete_unvisited_node(self.planet.current_coordinates)
         self.planet.delete_explored_path(self.planet.current_coordinates,
                                          self.planet.get_end_dir(self.planet.current_direction))
         next_direction = self.planet.find_next_direction()
@@ -66,7 +65,7 @@ class Robot:
         # path select
         self.communication.send_pathSelect(self.planet.current_coordinates[0], self.planet.current_coordinates[1],
                                            int(next_direction))
-        time.sleep(8)
+        time.sleep(4)
         self.planet.check_direction(next_direction)
         return 1
 
