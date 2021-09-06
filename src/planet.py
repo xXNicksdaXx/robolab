@@ -228,14 +228,14 @@ class Planet:
             myList = []
 
         real_directions = self.get_real_directions(directions)
-        L = len(real_directions)-1
-        for i in range[0, L]:
-            d = real_directions[L - i]
-            if d not in myList:
-                self.paths_to_be_explored.append((node, d))
-        # for d in real_directions:
+        # L = len(real_directions)-1
+        # for i in range(0, L + 1):
+        #     d = real_directions[L - i]
         #     if d not in myList:
         #         self.paths_to_be_explored.append((node, d))
+        for d in real_directions:
+            if d not in myList:
+                self.paths_to_be_explored.append((node, d))
 
     def delete_explored_path(self, node, direction):
         if (node, direction) in self.paths_to_be_explored:

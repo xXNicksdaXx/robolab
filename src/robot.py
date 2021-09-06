@@ -64,10 +64,10 @@ class Robot:
             # self.planet.target_reached()
             print("target List :", self.planet.target)
             self.planet.add_path_to_be_explored(self.planet.current_coordinates, directions)
-            self.planet.delete_explored_path(self.planet.current_coordinates, self.planet.get_end_dir(self.planet.current_direction))
             print("paths_to_be_explored : ", self.planet.paths_to_be_explored)
 
-        self.planet.update_paths_to_be_explored(self.planet.current_coordinates, self.planet.current_direction, "free")
+        self.planet.delete_explored_path(self.planet.current_coordinates,
+                                         self.planet.get_end_dir(self.planet.current_direction))
         next_direction = self.planet.find_next_direction()
         print("next_dir :", next_direction)
         if next_direction is None:
