@@ -246,10 +246,8 @@ class Planet:
                 path = self.dijkstra(self.current_coordinates, node)
                 options.append(path)
         better_options = [value for value in options if value != ([], 0)]
-        print("options :", better_options)
         if better_options:
             minimum = min(better_options, key=lambda t: t[1])[0][0][1]
-            print("minimum", minimum)
             return minimum
 
     def find_next_direction(self):
