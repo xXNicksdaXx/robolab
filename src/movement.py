@@ -175,7 +175,7 @@ class Movement:
     # measure distance
     def distance(self):
         d = self.ultrasonicSensor.distance_centimeters
-        if d < 8:
+        if d < 6:
             self.stop()
             print("! FOUND ASTEROID !")
             self.speaker.tone(262, 1000)
