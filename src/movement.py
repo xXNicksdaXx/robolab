@@ -15,10 +15,10 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.69
-    ki = 0.058
-    kd = 0.58
-    targetPower = 135
+    kp = 0.67
+    ki = 0.077
+    kd = 0.6
+    targetPower = 150
     integral = 0
     lastError = 0
     derivative = 0
@@ -203,11 +203,10 @@ class Movement:
             self.distance()
             colorValue = self.scan()
             if colorValue == -1 or colorValue == -2:
-                # self.stop()
-                # self.color = colorValue
-                # self.to_node()
-                # break
-                a = 1
+                self.stop()
+                self.color = colorValue
+                self.to_node()
+                break
             else:
                 error = colorValue - self.offset
                 self.integral = 0.67 * self.integral + error

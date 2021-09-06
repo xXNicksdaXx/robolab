@@ -8,7 +8,6 @@ import signal
 from communication import Communication
 from planet import Planet
 from robot import Robot
-from movement import Movement
 
 client = None  # DO NOT EDIT
 
@@ -36,8 +35,6 @@ def run():
     # ADD YOUR OWN IMPLEMENTATION HEREAFTER.
 
     print("-------------------- ROBOT --------------------")
-    mo = Movement()
-    mo.follow_line()
     planet = Planet()
     com = Communication(client, logger, planet)
     client.loop_start()
