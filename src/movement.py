@@ -15,10 +15,10 @@ class Movement:
     speaker = ev3.Sound()
 
     # pid variables
-    kp = 0.71
-    ki = 0.057
+    kp = 0.69
+    ki = 0.058
     kd = 0.53
-    targetPower = 120
+    targetPower = 130
     integral = 0
     lastError = 0
     derivative = 0
