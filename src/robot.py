@@ -75,7 +75,7 @@ class Robot:
             self.movement.follow_line()
             self.data = self.movement.data
             self.on_node()
-            time.sleep(4)
+            time.sleep(6)
             i = self.find_new_direction()
             if i == 0:
                 break
